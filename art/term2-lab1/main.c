@@ -67,7 +67,7 @@ void printTableBody() {
 	printf("\n");
 }
 
-void printTableBottom() {
+void printTableUnderline() {
 	int tbx = 193;
 	int tabl = 192;
 	int tabr = 217;
@@ -106,7 +106,7 @@ int main()
 
 			printf("%c%d	%c%d	%c%d	%c%d	%c\n", th, number, th, i, th, j, th, max, th);
 
-			if (i + 1 == n && j + 1 == m) printTableBottom();
+			if (i + 1 == n && j + 1 == m) printTableUnderline();
 			else printTableBody();
 				
 			number++;
