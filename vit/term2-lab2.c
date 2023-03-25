@@ -1,69 +1,74 @@
-﻿// ConsoleApplication4.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
 #include <windows.h>
-void menu(); void input(); void output(); void add(); void search(); void sort(); void del();
+
+void menu(); void input(); void output(); void add(); void search(); void sort(); void delete();
+
 struct cat  { 
     char br[15]; // Порода
     int age; // Возраст
     char color[10]; // Цвет
     char ph[12]; // Телефон продавца
-}; struct cat K[50]; // База данных
-int last = 0; // Сохраняет последний добавленный элемент
+};
+
+struct cat cats[50]; // База данных
+
+int count = 0; // Сохраняет последний добавленный элемент
+
 void printX(int tx) {
     setlocale(LC_ALL, ".866");
-    if (tx == 1) { //верх
-        printf("%c", 218);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 194);
-        for (int i = 0; i < 15; i++) printf("%c", 196);
-        printf("%c", 194);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 194);
-        for (int i = 0; i < 11; i++) printf("%c", 196);
-        printf("%c", 194);
-        for (int i = 0; i < 12; i++) printf("%c", 196);
-        printf("%c\n", 191);
-
-    }
-    if (tx == 2) { // середина
-        printf("%c", 195);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 197);
-        for (int i = 0; i < 15; i++) printf("%c", 196);
-        printf("%c", 197);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 197);
-        for (int i = 0; i < 11; i++) printf("%c", 196);
-        printf("%c", 197);
-        for (int i = 0; i < 12; i++) printf("%c", 196);
-        printf("%c\n", 180);
-    }
-    if (tx == 3) { // низ
-        printf("%c", 192);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 193);
-        for (int i = 0; i < 15; i++) printf("%c", 196);
-        printf("%c", 193);
-        for (int i = 0; i < 5; i++) printf("%c", 196);
-        printf("%c", 193);
-        for (int i = 0; i < 11; i++) printf("%c", 196);
-        printf("%c", 193);
-        for (int i = 0; i < 12; i++) printf("%c", 196);
-        printf("%c\n", 217);
-    }
+    switch (tx) {
+        case 1:
+            printf("%c", 218);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 194);
+            for (int i = 0; i < 15; i++) printf("%c", 196);
+            printf("%c", 194);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 194);
+            for (int i = 0; i < 11; i++) printf("%c", 196);
+            printf("%c", 194);
+            for (int i = 0; i < 12; i++) printf("%c", 196);
+            printf("%c\n", 191);
+            break;
+        case 2:
+            printf("%c", 195);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 197);
+            for (int i = 0; i < 15; i++) printf("%c", 196);
+            printf("%c", 197);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 197);
+            for (int i = 0; i < 11; i++) printf("%c", 196);
+            printf("%c", 197);
+            for (int i = 0; i < 12; i++) printf("%c", 196);
+            printf("%c\n", 180);
+            break;
+        case 3:
+            printf("%c", 192);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 193);
+            for (int i = 0; i < 15; i++) printf("%c", 196);
+            printf("%c", 193);
+            for (int i = 0; i < 5; i++) printf("%c", 196);
+            printf("%c", 193);
+            for (int i = 0; i < 11; i++) printf("%c", 196);
+            printf("%c", 193);
+            for (int i = 0; i < 12; i++) printf("%c", 196);
+            printf("%c\n", 217);
+            break;
+    } 
     setlocale(LC_ALL, ".1251");
 }
 
-int main()
-{ 
+int main() { 
     SetConsoleCP(1251);
     menu();
     return 0;
 }
+
 void menu() {
     setlocale(LC_ALL, ".1251");
     int num=0; // Выбор опции
@@ -92,7 +97,7 @@ void menu() {
             search();
             break;
         case 5:
-            del();
+            delete();
             break;
         case 6:
             sort();
@@ -106,22 +111,22 @@ void input() { // Ввод
     scanf("%d", &a); 
     for (int i = 0; i < a; i++) {
         printf("Порода: ");
-        scanf("%s", &K[i].br);
+        scanf("%s", &cats[i].br);
         printf("Возраст: ");
-        scanf("%d", &K[i].age);
+        scanf("%d", &cats[i].age);
         printf("Цвет: ");
-        scanf("%s", &K[i].color);
+        scanf("%s", &cats[i].color);
         printf("Телефон: ");
-        scanf("%s", &K[i].ph);
-        last = a;
+        scanf("%s", &cats[i].ph);
+        count = a;
     } 
 }
 void output() {
     printX(1);
     printf("|  №  | Порода        |  В. |  Цвет     | Телефон    |\n");
-    for (int i = 0; i < last; i++) {
+    for (int i = 0; i < count; i++) {
         printX(2);
-        printf("|  %d  | %13s | %3d | %9s |%12s|\n", i+1, K[i].br, K[i].age, K[i].color, K[i].ph);
+        printf("|  %d  | %13s | %3d | %9s |%12s|\n", i+1, cats[i].br, cats[i].age, cats[i].color, cats[i].ph);
     }
     printX(3);
 }
@@ -130,17 +135,17 @@ void add() {
     int a;
     printf("Сколько вы хотите ввести элементов: ");
     scanf("%d", &a);
-    for (int i = last; i < a+last; i++) {
+    for (int i = count; i < a+count; i++) {
         printf("Порода: ");
-        scanf("%s", &K[i].br);
+        scanf("%s", &cats[i].br);
         printf("Возраст: ");
-        scanf("%d", &K[i].age);
+        scanf("%d", &cats[i].age);
         printf("Цвет: ");
-        scanf("%s", &K[i].color);
+        scanf("%s", &cats[i].color);
         printf("Телефон: ");
-        scanf("%s", &K[i].ph);
+        scanf("%s", &cats[i].ph);
     }
-    last = a + last; // Обновляем счетчик последнего объекта
+    count = a + count; // Обновляем счетчик последнего объекта
 }
 
 void search() {
@@ -158,9 +163,9 @@ void search() {
         printX(1);
         printf("|  №  | Порода        |  В. |  Цвет     | Телефон    |\n");
         for (int i = 0; i < 50; i++) {
-            if (strcmp(K[i].br, s) == 0 || strcmp(K[i].color, s) == 0 || strcmp(K[i].ph, s) == 0) {
+            if (strcmp(cats[i].br, s) == 0 || strcmp(cats[i].color, s) == 0 || strcmp(cats[i].ph, s) == 0) {
                 printX(2);
-                printf("|  %d  | %13s | %3d | %9s |%12s|\n", i + 1, K[i].br, K[i].age, K[i].color, K[i].ph);
+                printf("|  %d  | %13s | %3d | %9s |%12s|\n", i + 1, cats[i].br, cats[i].age, cats[i].color, cats[i].ph);
                 
             }
             
@@ -173,9 +178,9 @@ void search() {
         printX(1);
         printf("|  №  | Порода        |  В. |  Цвет     | Телефон    |\n");
         for (int i = 0; i < 50; i++) {
-            if (d == K[i].age) {
+            if (d == cats[i].age) {
                 printX(2);
-                printf("|  %d  | %13s | %3d | %9s |%12s|\n", i + 1, K[i].br, K[i].age, K[i].color, K[i].ph);
+                printf("|  %d  | %13s | %3d | %9s |%12s|\n", i + 1, cats[i].br, cats[i].age, cats[i].color, cats[i].ph);
             }
         }
         printX(3);
@@ -193,85 +198,86 @@ void sort() {
     scanf("%d", &num);
     switch (num) {
     case 1:
-        for (int j = 0; j < last-1; j++) {
-            for (int i = 0; i < last-1; i++) {
-                if (strcmp(K[i].br, K[i + 1].br) > 0) {
+        for (int j = 0; j < count-1; j++) {
+            for (int i = 0; i < count-1; i++) {
+                if (strcmp(cats[i].br, cats[i + 1].br) > 0) {
                     char tmp[16]; int temp = 0;
-                    strcpy(tmp, K[i].br); // порода
-                    strcpy(K[i].br, K[i + 1].br);
-                    strcpy(K[i + 1].br, tmp);
-                    temp = K[i].age;
-                    K[i].age = K[i + 1].age;
-                    K[i+1].age = temp;
-                    strcpy(tmp, K[i].color); // цвет
-                    strcpy(K[i].color, K[i + 1].color);
-                    strcpy(K[i + 1].color, tmp);
-                    strcpy(tmp, K[i].ph); // телефон
-                    strcpy(K[i].ph, K[i + 1].ph);
-                    strcpy(K[i + 1].ph, tmp);
+                    strcpy(tmp, cats[i].br); // порода
+                    strcpy(cats[i].br, cats[i + 1].br);
+                    strcpy(cats[i + 1].br, tmp);
+                    temp = cats[i].age;
+                    cats[i].age = cats[i + 1].age;
+                    cats[i+1].age = temp;
+                    strcpy(tmp, cats[i].color); // цвет
+                    strcpy(cats[i].color, cats[i + 1].color);
+                    strcpy(cats[i + 1].color, tmp);
+                    strcpy(tmp, cats[i].ph); // телефон
+                    strcpy(cats[i].ph, cats[i + 1].ph);
+                    strcpy(cats[i + 1].ph, tmp);
+                    cats[i] = cats[i + 1];
                 }
             }
         } 
         break;
     case 2:
-        for (int j = 0; j < last - 1; j++) {
-            for (int i = 0; i < last - 1; i++) {
-                if (K[i].age > K[i+1].age) {
+        for (int j = 0; j < count - 1; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                if (cats[i].age > cats[i+1].age) {
                     char tmp[16]; int temp = 0;
-                    strcpy(tmp, K[i].br); // порода
-                    strcpy(K[i].br, K[i + 1].br);
-                    strcpy(K[i + 1].br, tmp);
-                    temp = K[i].age;
-                    K[i].age = K[i + 1].age;
-                    K[i + 1].age = temp;
-                    strcpy(tmp, K[i].color); // цвет
-                    strcpy(K[i].color, K[i + 1].color);
-                    strcpy(K[i + 1].color, tmp);
-                    strcpy(tmp, K[i].ph); // телефон
-                    strcpy(K[i].ph, K[i + 1].ph);
-                    strcpy(K[i + 1].ph, tmp);
+                    strcpy(tmp, cats[i].br); // порода
+                    strcpy(cats[i].br, cats[i + 1].br);
+                    strcpy(cats[i + 1].br, tmp);
+                    temp = cats[i].age;
+                    cats[i].age = cats[i + 1].age;
+                    cats[i + 1].age = temp;
+                    strcpy(tmp, cats[i].color); // цвет
+                    strcpy(cats[i].color, cats[i + 1].color);
+                    strcpy(cats[i + 1].color, tmp);
+                    strcpy(tmp, cats[i].ph); // телефон
+                    strcpy(cats[i].ph, cats[i + 1].ph);
+                    strcpy(cats[i + 1].ph, tmp);
                 }
             }
         }
         break;
     case 3:
-        for (int j = 0; j < last - 1; j++) {
-            for (int i = 0; i < last - 1; i++) {
-                if (strcmp(K[i].color, K[i + 1].color) > 0) {
+        for (int j = 0; j < count - 1; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                if (strcmp(cats[i].color, cats[i + 1].color) > 0) {
                     char tmp[16]; int temp = 0;
-                    strcpy(tmp, K[i].br); // порода
-                    strcpy(K[i].br, K[i + 1].br);
-                    strcpy(K[i + 1].br, tmp);
-                    temp = K[i].age;
-                    K[i].age = K[i + 1].age;
-                    K[i + 1].age = temp;
-                    strcpy(tmp, K[i].color); // цвет
-                    strcpy(K[i].color, K[i + 1].color);
-                    strcpy(K[i + 1].color, tmp);
-                    strcpy(tmp, K[i].ph); // телефон
-                    strcpy(K[i].ph, K[i + 1].ph);
-                    strcpy(K[i + 1].ph, tmp);
+                    strcpy(tmp, cats[i].br); // порода
+                    strcpy(cats[i].br, cats[i + 1].br);
+                    strcpy(cats[i + 1].br, tmp);
+                    temp = cats[i].age;
+                    cats[i].age = cats[i + 1].age;
+                    cats[i + 1].age = temp;
+                    strcpy(tmp, cats[i].color); // цвет
+                    strcpy(cats[i].color, cats[i + 1].color);
+                    strcpy(cats[i + 1].color, tmp);
+                    strcpy(tmp, cats[i].ph); // телефон
+                    strcpy(cats[i].ph, cats[i + 1].ph);
+                    strcpy(cats[i + 1].ph, tmp);
                 }
             }
         }
         break;
     case 4:
-        for (int j = 0; j < last - 1; j++) {
-            for (int i = 0; i < last - 1; i++) {
-                if (strcmp(K[i].ph, K[i + 1].ph) > 0) {
+        for (int j = 0; j < count - 1; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                if (strcmp(cats[i].ph, cats[i + 1].ph) > 0) {
                     char tmp[16]; int temp = 0;
-                    strcpy(tmp, K[i].br); // порода
-                    strcpy(K[i].br, K[i + 1].br);
-                    strcpy(K[i + 1].br, tmp);
-                    temp = K[i].age;
-                    K[i].age = K[i + 1].age;
-                    K[i + 1].age = temp;
-                    strcpy(tmp, K[i].color); // цвет
-                    strcpy(K[i].color, K[i + 1].color);
-                    strcpy(K[i + 1].color, tmp);
-                    strcpy(tmp, K[i].ph); // телефон
-                    strcpy(K[i].ph, K[i + 1].ph);
-                    strcpy(K[i + 1].ph, tmp);
+                    strcpy(tmp, cats[i].br); // порода
+                    strcpy(cats[i].br, cats[i + 1].br);
+                    strcpy(cats[i + 1].br, tmp);
+                    temp = cats[i].age;
+                    cats[i].age = cats[i + 1].age;
+                    cats[i + 1].age = temp;
+                    strcpy(tmp, cats[i].color); // цвет
+                    strcpy(cats[i].color, cats[i + 1].color);
+                    strcpy(cats[i + 1].color, tmp);
+                    strcpy(tmp, cats[i].ph); // телефон
+                    strcpy(cats[i].ph, cats[i + 1].ph);
+                    strcpy(cats[i + 1].ph, tmp);
                 }
             }
         }
@@ -279,18 +285,18 @@ void sort() {
     }
 }
 
-void del() {
+void delete() {
     int k = 0;
     printf("Какой элемент удалить: ");
     scanf("%d", &k);
-    strcpy(K[k-1].br, K[last-1].br);
-    strcpy(K[last-1].br, "\0");
-    K[k - 1].age = K[last - 1].age;
-    K[last - 1].age = 0;
-    strcpy(K[k - 1].color, K[last - 1].color);
-    strcpy(K[last - 1].color, "\0");
-    strcpy(K[k - 1].ph, K[last - 1].ph);
-    strcpy(K[last - 1].ph, "\0");
-    last--;
+    strcpy(cats[k-1].br, cats[count-1].br);
+    strcpy(cats[count-1].br, "\0");
+    cats[k - 1].age = cats[count - 1].age;
+    cats[count - 1].age = 0;
+    strcpy(cats[k - 1].color, cats[count - 1].color);
+    strcpy(cats[count - 1].color, "\0");
+    strcpy(cats[k - 1].ph, cats[count - 1].ph);
+    strcpy(cats[count - 1].ph, "\0");
+    count--;
 }
 
