@@ -223,7 +223,6 @@ void menuDelete() {
             menuDelete();
             break;
     }
-    
 }
 
 void deleteOneByOrder(int order) {
@@ -257,7 +256,6 @@ void deleteManyByString(char* string, int deleteBy) {
             consumers[i] = consumers[i + 1];
             countDeleted++;
         }
-
     }
     count -= countDeleted;
     printf("%d consumer(s) was deleted\n\n", countDeleted);
@@ -270,7 +268,6 @@ void deleteManyByInt(int number) {
             consumers[i] = consumers[i + 1];
             countDeleted++;
         }
-        
     }
     count -= countDeleted;
     printf("%d consumer(s) was deleted\n\n", countDeleted);
