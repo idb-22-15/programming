@@ -80,7 +80,6 @@ void printError(const char* message) {
     setColorError();
     printf(message);
     resetColor();
-    clearBuffer();
 }
 
 
@@ -103,6 +102,7 @@ int main() {
 
 void menu() {
     while (true) {
+        fflush(stdout);
         setColorMenu();
         printf("Please, enter command:\n");
         printf("1: input db\n2: output db\n3: add counsumer\n4: find counsumer(s)\n5: delete consumer(s)\n6: sort db\n7: exit\n> ");
@@ -196,17 +196,14 @@ void inputFromConsole() {
     printf("Please, enter items count: ");
     resetColor();
 
+    char itemsCountString[100] = "";
     int itemsCount;
-    __try {
-        scanf("%d", &itemsCount);
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        printError(UNEXPECTED_COMMAND);
 
-        inputFromConsole();
-        return;
-    }
+   
+    scanf("%s", &itemsCountString);
+    itemsCount = atoi(itemsCountString);
 
-    __try {
+    try {
         setColorMenu();
         printf("Please, enter data to DB:\n");
         resetColor();
@@ -216,8 +213,8 @@ void inputFromConsole() {
             addOne();
         }
         printf("\n");
-    } __except(EXCEPTION_EXECUTE_HANDLER){
-        printError("Failed to add new consumer");
+    } catch(const char* errorMessage){
+        printError("Failed to add new consumer\n");
     }
   
 }
@@ -278,12 +275,11 @@ void outputInConsole() {
 }
 
 void menuAdd() {
-    __try {
+    try {
         addOne();
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
-        printError("Failed to add consumer\n");
+    } catch(const char* errorMessage) {
+        printError(errorMessage);
     }
-    
 }
 
 void addOne() {
@@ -291,14 +287,15 @@ void addOne() {
     printf("Please, enter new cunsumer:\n");
     printf("Name    Surname Email   Balance\n");
     resetColor();
-    //char balanceString[100] = "x";
+    char balanceString[100] = "";
+   
+    scanf("%s%s%s%s", consumers[count].name, consumers[count].surname, consumers[count].email, &balanceString);
+    consumers[count].balance = atoi(balanceString);
 
-    scanf("%s%s%s%d", consumers[count].name, consumers[count].surname, consumers[count].email, &consumers[count].balance);
-    //consumers[count].balance = atoi(balanceString);
+    if (balanceString[1] == EOF && balanceString[0] == '0' && atoi(balanceString) != 0) {
+        consumers[count].balance = atoi(balanceString);
+    } else if (atoi(balanceString) == 0) throw "Invalid data\n";
     count++;
-    
-
- 
 }
 
 void menuFind() {
