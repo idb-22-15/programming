@@ -47,21 +47,42 @@ struct Consumer {
 struct Consumer consumers[100];
 int count = 0;
 
+void clearBuffer() {
+    while (getchar() != EOF);
+    //scanf("%*^\n");
+}
+
 const char* UNEXPECTED_COMMAND = "Unexpected command\n";
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void setColor(unsigned int color) {
+    fflush(stdout);
     SetConsoleTextAttribute(hConsole, color);
 }
 
 void resetColor() {
+    fflush(stdout);
     SetConsoleTextAttribute(hConsole, 15);
 }
 
 void setColorMenu() {
+    fflush(stdout);
     SetConsoleTextAttribute(hConsole, 14);
 }
+
+void setColorError() {
+    fflush(stdout);
+    SetConsoleTextAttribute(hConsole, 4);
+}
+
+void printError(const char* message) {
+    setColorError();
+    printf(message);
+    resetColor();
+    clearBuffer();
+}
+
 
 int main() {
     resetColor();
@@ -71,62 +92,53 @@ int main() {
         setColor(color);
         printf("%3d  %s\n", color, "I want to be nice today!");
     }
-    try {
+    __try {
         menu();
     }
-    catch (...) {
-        printf("FUCK\n");
-        return 0;
+    __except(EXCEPTION_EXECUTE_HANDLER) {
+        printError("\nSomething went wrong :(\n");
     }
+    
 }
 
 void menu() {
-    setColorMenu();
-    printf("Please, enter command:\n");
-    printf("1: input db\n2: output db\n3: add counsumer\n4: find counsumer(s)\n5: delete consumer(s)\n6: sort db\n7: exit\n> ");
-    resetColor();
+    while (true) {
+        setColorMenu();
+        printf("Please, enter command:\n");
+        printf("1: input db\n2: output db\n3: add counsumer\n4: find counsumer(s)\n5: delete consumer(s)\n6: sort db\n7: exit\n> ");
+        resetColor();
 
-    int command;
-    try {
-        scanf("%d", &command);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        menu();
-        return;
-    }
+        char commandString[100] = "";
+        int command = 0;
 
-    switch (command) {
-        case 1:
-            menuInput();
-            menu();
-            break;
-        case 2:
-            menuOutput();
-            menu();
-            break;
-        case 3:
-            menuAdd();
-            menu();
-            break;
-        case 4:
-            menuFind();
-            menu();
-            break;
-        case 5:
-            menuDelete();
-            menu();
-            break;
-        case 6:
-            menuSort();
-            menu();
-            break;
-        case 7:
-            break;
-        default:
-            menu();
-            break;
+        scanf("%s", commandString);
+        command = atoi(commandString);
+        switch (command) {
+            case 1:
+                menuInput();
+                break;
+            case 2:
+                menuOutput();
+                break;
+            case 3:
+                menuAdd();
+                break;
+            case 4:
+                menuFind();
+                break;
+            case 5:
+                menuDelete();
+                break;
+            case 6:
+                menuSort();
+                break;
+            case 7:
+                exit(0);
+                break;
+            default:
+                break;
+        }
     }
-   
 }
 
 void menuInput() {
@@ -135,14 +147,11 @@ void menuInput() {
     printf("1: db\n2: console\n> ");
     resetColor();
 
+    char commandString[100] = "";
     int command;
-    try {
-        scanf("%d", &command);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        menuInput();
-        return;
-    }
+
+    scanf("%s", commandString);
+    command = atoi(commandString);
 
     switch (command) {
         case 1:
@@ -168,15 +177,15 @@ void inputFromDb() {
         return;
     }
 
-    try {
+    __try {
         count = 0;
         int i = 0;
         while (fscanf(file, "%s%s%s%d", consumers[i].name, consumers[i].surname, consumers[i].email, &consumers[i].balance) != EOF) {
             i++;
             count++;
         }
-    } catch (...) {
-        printf("Failed to load data from db\n");
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        printError("Failed to load data from db\n");
     }
 
     fclose(file);
@@ -188,15 +197,16 @@ void inputFromConsole() {
     resetColor();
 
     int itemsCount;
-    try {
+    __try {
         scanf("%d", &itemsCount);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        printError(UNEXPECTED_COMMAND);
+
         inputFromConsole();
         return;
     }
 
-    try {
+    __try {
         setColorMenu();
         printf("Please, enter data to DB:\n");
         resetColor();
@@ -206,8 +216,8 @@ void inputFromConsole() {
             addOne();
         }
         printf("\n");
-    } catch (...) {
-        printf("Failed to add new consumer");
+    } __except(EXCEPTION_EXECUTE_HANDLER){
+        printError("Failed to add new consumer");
     }
   
 }
@@ -218,14 +228,11 @@ void menuOutput() {
     printf("1: db\n2: console\n> ");
     resetColor();
 
+    char commandString[100] = "";
     int command;
-    try {
-        scanf("%d", &command);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        menuOutput();
-        return;
-    }
+
+    scanf("%s", commandString);
+    command = atoi(commandString);
 
     switch (command) {
         case 1:
@@ -248,13 +255,13 @@ void outputInDb() {
         return;
     }
 
-    try {
+    __try {
         for (int i = 0; i < count; i++) {
             const struct Consumer consumer = consumers[i];
             fprintf(file, "%s %s %s %d\n", consumer.name, consumer.surname, consumer.email, consumer.balance);
         }
-    } catch (...) {
-        printf("Failed to write in db\n");
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        printError("Failed to write in db\n");
     }
 
     fclose(file);
@@ -271,10 +278,10 @@ void outputInConsole() {
 }
 
 void menuAdd() {
-    try {
+    __try {
         addOne();
-    } catch (...) {
-        printf("Failed to add concumer\n");
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        printError("Failed to add consumer\n");
     }
     
 }
@@ -284,9 +291,14 @@ void addOne() {
     printf("Please, enter new cunsumer:\n");
     printf("Name    Surname Email   Balance\n");
     resetColor();
+    //char balanceString[100] = "x";
 
-    scanf("%s%s%s%s", consumers[count].name,consumers[count].surname, consumers[count].email, consumers[count].balance);
+    scanf("%s%s%s%d", consumers[count].name, consumers[count].surname, consumers[count].email, &consumers[count].balance);
+    //consumers[count].balance = atoi(balanceString);
     count++;
+    
+
+ 
 }
 
 void menuFind() {
@@ -295,59 +307,53 @@ void menuFind() {
     printf("1: name\n2: surname\n3: email\n4: balance\n> ");
     resetColor();
 
+    char findByString[100] = "";
     int findBy;
-    try {
-        scanf("%d", &findBy);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        menuFind();
-        return;
-    }
+
+    scanf("%s", findByString);
+    findBy = atoi(findByString);
     
     char string[100];
     int number;
-    try {
-        switch (findBy) {
-            case 1:
-                setColorMenu();
-                printf("Please, enter name: ");
-                scanf("%s", string);
-                resetColor();
+   
+    switch (findBy) {
+        case 1:
+            setColorMenu();
+            printf("Please, enter name: ");
+            scanf("%s", string);
+            resetColor();
 
-                findManyByString(string, 1);
-                break;
-            case 2:
-                setColorMenu();
-                printf("Please, enter surname: ");
-                scanf("%s", string);
-                resetColor();
+            findManyByString(string, 1);
+            break;
+        case 2:
+            setColorMenu();
+            printf("Please, enter surname: ");
+            scanf("%s", string);
+            resetColor();
 
-                findManyByString(string, 2);
-                break;
-            case 3:
-                setColorMenu();
-                printf("Please, enter email: ");
-                scanf("%s", string);
-                resetColor();
+            findManyByString(string, 2);
+            break;
+        case 3:
+            setColorMenu();
+            printf("Please, enter email: ");
+            scanf("%s", string);
+            resetColor();
 
-                findManyByString(string, 3);
-                break;
-            case 4:
-                setColorMenu();
-                printf("Please, enter balance: ");
-                scanf("%d", &number);
-                resetColor();
+            findManyByString(string, 3);
+            break;
+        case 4:
+            setColorMenu();
+            printf("Please, enter balance: ");
+            scanf("%d", &number);
+            resetColor();
 
-                findManyByInt(number);
-                break;
-            default:
-                menuFind();
-                break;
-        }
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        menuFind();
+            findManyByInt(number);
+            break;
+        default:
+            menuFind();
+            break;
     }
+  
 }
 
 void findManyByString(const char* string, int findBy) {
@@ -398,13 +404,11 @@ void menuDelete() {
     printf("1: order\n2: name\n3: surname\n4: email\n5: balance\n> ");
     resetColor();
 
+    char deleteByString[100] = "";
     int deleteBy;
-    try {
-        scanf("%d", &deleteBy);
-    } catch (...) {
-        printf(UNEXPECTED_COMMAND);
-        return;
-    }
+
+    scanf("%s", &deleteByString);
+    deleteBy = atoi(deleteByString);
    
 
     char string[100];
@@ -512,7 +516,6 @@ void deleteManyByString(const char* string, int deleteBy) {
 }
 
 void deleteManyByInt(int number) {
-    //printf("AAAAA %d\n", number);
     int countDeleted = 0;
     for (int i = 0; i < count; i++) {
         if (consumers[i].balance == number) {
@@ -535,15 +538,11 @@ void menuSort() {
     printf("1: name\n2: surname\n3: email\n4: balance\n> ");
     resetColor();
 
+    char sortByString[100] = "";
     int sortBy;
-    try {
-        scanf("%d", &sortBy);
-    } catch (...) {
-        printf("Unexpected command\n");
-        menuSort();
-        
-        return;
-    }
+
+    scanf("%d", &sortByString);
+    sortBy = atoi(sortByString);
 
     switch (sortBy) {
         case 1:
