@@ -18,7 +18,7 @@ void menuAdd();
 void addOne();
 
 void menuFind();
-void findManyByString(const char*, int);
+void findManyByString(char*, int);
 void findManyByInt(int);
 
 void menuDelete();
@@ -33,8 +33,9 @@ void printTableX();
 void printTableTop();
 void printTableHead();
 void printTableHeadFull();
-void printTableBody(const struct Consumer, int);
+void printTableBody(struct Consumer, int);
 void printTableUnderline();
+void printTableItemUnderline();
 void printTableBottom();
 
 struct Consumer {
@@ -47,10 +48,10 @@ struct Consumer {
 struct Consumer consumers[100];
 int count = 0;
 
-void clearBuffer() {
-    while (getchar() != EOF);
-    //scanf("%*^\n");
-}
+//void clearBuffer() {
+//    while (getchar() != EOF);
+//    //scanf("%*^\n");
+//}
 
 const char* UNEXPECTED_COMMAND = "Unexpected command\n";
 
@@ -85,12 +86,7 @@ void printError(const char* message) {
 
 int main() {
     resetColor();
-   
-    for (int color = 1; color < 16; color++)
-    {
-        setColor(color);
-        printf("%3d  %s\n", color, "I want to be nice today!");
-    }
+  
     __try {
         menu();
     }
@@ -353,7 +349,7 @@ void menuFind() {
   
 }
 
-void findManyByString(const char* string, int findBy) {
+void findManyByString(char* string, int findBy) {
     printTableHeadFull();
     int countFinded = 0;
     for (int i = 0; i < count; i++) {
@@ -414,42 +410,42 @@ void menuDelete() {
         case 1:
             setColorMenu();
             printf("Please, enter consumer's order to delete: ");
+            resetColor();
             int order;
             scanf("%d", &order);
-            resetColor();
-
+            
             deleteOneByOrder(order);
             break;
         case 2:
             setColorMenu();
             printf("Please, enter consumers' name to delete: ");
-            scanf("%s", &string);
             resetColor();
-
+            scanf("%s", &string);
+            
             deleteManyByString(string, 2);
             break;
         case 3:
             setColorMenu();
             printf("Please, enter consumers' surname to delete: ");
-            scanf("%s", &string);
             resetColor();
-
+            scanf("%s", &string);
+            
             deleteManyByString(string, 3);
             break;
         case 4:
             setColorMenu();
             printf("Please, enter consumers' email to delete: ");
-            scanf("%s", &string);
             resetColor();
-
+            scanf("%s", &string);
+            
             deleteManyByString(string, 4);
             break;
         case 5:
             setColorMenu();
             printf("Please, enter consumers' balance to delete: ");
-            scanf("%d", &number);
             resetColor();
-
+            scanf("%d", &number);
+            
             deleteManyByInt(number);
             break;
         default:
@@ -538,7 +534,7 @@ void menuSort() {
     char sortByString[100] = "";
     int sortBy;
 
-    scanf("%d", &sortByString);
+    scanf("%s", &sortByString);
     sortBy = atoi(sortByString);
 
     switch (sortBy) {
@@ -568,35 +564,29 @@ void sortSelectionByName() {
     if (count == 0) return;
 
     for (int i = 0; i < count; i++) {
-        char* min = consumers[i].name;
-        int minIndex = i;
         for (int j = i + 1; j < count; j++) {
-            if (strcmp(consumers[j].name, min) == -1) {
-                min = consumers[i].name;
-                minIndex = j;
+            if (strcmp(consumers[i].name, consumers[j].name) == 1) {
+                struct Consumer temp = consumers[i];
+                consumers[i] = consumers[j];
+                consumers[j] = temp;
             }
         }
-        struct Consumer temp = consumers[i];
-        consumers[i] = consumers[minIndex];
-        consumers[minIndex] = temp;
     }
+
+    
 }
 
 void sortSelectionBySurname() {
     if (count == 0) return;
 
     for (int i = 0; i < count; i++) {
-        char* min = consumers[i].surname;
-        int minIndex = i;
         for (int j = i + 1; j < count; j++) {
-            if (strcmp(consumers[j].surname, min) == -1) {
-                min = consumers[i].surname;
-                minIndex = j;
+            if (strcmp(consumers[i].surname, consumers[j].surname) == 1) {
+                struct Consumer temp = consumers[i];
+                consumers[i] = consumers[j];
+                consumers[j] = temp;
             }
         }
-        struct Consumer temp = consumers[i];
-        consumers[i] = consumers[minIndex];
-        consumers[minIndex] = temp;
     }
 }
 
@@ -604,17 +594,13 @@ void sortSelectionByEmail() {
     if (count == 0) return;
 
     for (int i = 0; i < count; i++) {
-        char* min = consumers[i].email;
-        int minIndex = i;
         for (int j = i + 1; j < count; j++) {
-            if (strcmp(consumers[j].email, min) == -1) {
-                min = consumers[i].email;
-                minIndex = j;
+            if (strcmp(consumers[i].email, consumers[j].email) == 1) {
+                struct Consumer temp = consumers[i];
+                consumers[i] = consumers[j];
+                consumers[j] = temp;
             }
         }
-        struct Consumer temp = consumers[i];
-        consumers[i] = consumers[minIndex];
-        consumers[minIndex] = temp;
     }
 }
 
@@ -622,33 +608,32 @@ void sortSelectionByBalance() {
     if (count == 0) return;
 
     for (int i = 0; i < count; i++) {
-        int min = consumers[i].balance;
-        int minIndex = i;
         for (int j = i + 1; j < count; j++) {
-            if (consumers[j].balance < min) {
-                min = consumers[j].balance;
-                minIndex = j;
+            if (consumers[i].balance > consumers[j].balance) {
+                struct Consumer temp = consumers[i];
+                consumers[i] = consumers[j];
+                consumers[j] = temp;
             }
         }
-
-        const struct Consumer temp = consumers[i];
-        consumers[i] = consumers[minIndex];
-        consumers[minIndex] = temp;
     }
 }
 
 
-void printTableX(int tx) {
+void printTableItemUnderline() {
     const int tw = 196;
-    for (int i = 0; i < 13; i++) printf("%c", tw);
-    printf("%c", tx);
-    for (int i = 0; i < 13; i++) printf("%c", tw);
-    printf("%c", tx);
-    for (int i = 0; i < 13; i++) printf("%c", tw);
-    printf("%c", tx);
-    for (int i = 0; i < 13; i++) printf("%c", tw);
-    printf("%c", tx);
-    for (int i = 0; i < 13; i++) printf("%c", tw);
+    for (int c = 0; c < 13; c++) printf("%c", tw);
+}
+
+void printTableX(int tx) {
+   
+    const int columns = 5;
+
+    for (int i = 0; i < columns - 1; i++) {
+        printTableItemUnderline();
+        printf("%c", tx);
+    }
+    printTableItemUnderline();
+    
 }
 
 void printTableTop() {
@@ -673,7 +658,7 @@ void printTableHeadFull() {
     printTableUnderline();
 }
 
-void printTableBody(const struct Consumer consumer, int index) {
+void printTableBody(struct Consumer consumer, int index) {
     const int order = index + 1;
     const int th = 179;
     printf("%c%13d%c%13s%c%13s%c%13s%c%13d%c\n", th, order, th, consumer.name, th, consumer.surname, th, consumer.email, th, consumer.balance, th);
