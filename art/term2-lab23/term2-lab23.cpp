@@ -48,11 +48,6 @@ struct Consumer {
 struct Consumer consumers[100];
 int count = 0;
 
-//void clearBuffer() {
-//    while (getchar() != EOF);
-//    //scanf("%*^\n");
-//}
-
 const char* UNEXPECTED_COMMAND = "Unexpected command\n";
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -75,6 +70,17 @@ void setColorMenu() {
 void setColorError() {
     fflush(stdout);
     SetConsoleTextAttribute(hConsole, 4);
+}
+
+void setColorSuccess() {
+    fflush(stdout);
+    SetConsoleTextAttribute(hConsole, 10);
+}
+
+void printSuccess(const char* message) {
+    setColorSuccess();
+    printf(message);
+    resetColor();
 }
 
 void printError(const char* message) {
@@ -101,7 +107,8 @@ void menu() {
         fflush(stdout);
         setColorMenu();
         printf("Please, enter command:\n");
-        printf("1: input db\n2: output db\n3: add counsumer\n4: find counsumer(s)\n5: delete consumer(s)\n6: sort db\n7: exit\n> ");
+        printf("\t1: input db\t\t4: find counsumer(s)\t\t7: exit\n\t2: output db\t\t5: delete consumer(s)\n\t3: add counsumer\t6: sort db\n> ");
+        //printf("\t1: input db\n\t2: output db\n\t3: add counsumer\n\t4: find counsumer(s)\n\t5: delete consumer(s)\n\t6: sort db\n\t7: exit\n> ");
         resetColor();
 
         char commandString[100] = "";
@@ -140,7 +147,7 @@ void menu() {
 void menuInput() {
     setColorMenu();
     printf("Enter data from:\n");
-    printf("1: db\n2: console\n> ");
+    printf("\t1: db\t\t\t2: console\n> ");
     resetColor();
 
     char commandString[100] = "";
@@ -218,7 +225,7 @@ void inputFromConsole() {
 void menuOutput() {
     setColorMenu();
     printf("Write data to:\n");
-    printf("1: db\n2: console\n> ");
+    printf("\t1: db\t\t\t2: console\n> ");
     resetColor();
 
     char commandString[100] = "";
@@ -280,7 +287,7 @@ void menuAdd() {
 
 void addOne() {
     setColorMenu();
-    printf("Please, enter new cunsumer:\n");
+    printf("Please, enter new consumer:\n");
     printf("Name    Surname Email   Balance\n");
     resetColor();
     char balanceString[100] = "";
@@ -288,16 +295,18 @@ void addOne() {
     scanf("%s%s%s%s", consumers[count].name, consumers[count].surname, consumers[count].email, &balanceString);
     consumers[count].balance = atoi(balanceString);
 
-    if (balanceString[1] == EOF && balanceString[0] == '0' && atoi(balanceString) != 0) {
+    if (isdigit(balanceString[0])) {
         consumers[count].balance = atoi(balanceString);
     } else if (atoi(balanceString) == 0) throw "Invalid data\n";
+
+    printSuccess("Consumer was added\n");
     count++;
 }
 
 void menuFind() {
     setColorMenu();
     printf("Find by\n");
-    printf("1: name\n2: surname\n3: email\n4: balance\n> ");
+    printf("\t1: name\t\t\t3: email\n\t2: surname\t\t4: balance\n> ");
     resetColor();
 
     char findByString[100] = "";
@@ -307,39 +316,45 @@ void menuFind() {
     findBy = atoi(findByString);
     
     char string[100];
+    char numberString[100];
     int number;
    
     switch (findBy) {
         case 1:
             setColorMenu();
             printf("Please, enter name: ");
-            scanf("%s", string);
             resetColor();
+            scanf("%s", string);
 
             findManyByString(string, 1);
             break;
         case 2:
             setColorMenu();
             printf("Please, enter surname: ");
-            scanf("%s", string);
             resetColor();
+            scanf("%s", string);
 
             findManyByString(string, 2);
             break;
         case 3:
             setColorMenu();
             printf("Please, enter email: ");
-            scanf("%s", string);
             resetColor();
+            scanf("%s", string);
 
             findManyByString(string, 3);
             break;
         case 4:
             setColorMenu();
             printf("Please, enter balance: ");
-            scanf("%d", &number);
             resetColor();
+            scanf("%s", numberString);
 
+            if (!isdigit(numberString[0])) {
+                printError(UNEXPECTED_COMMAND);
+                break;
+            }
+            number = atoi(numberString);
             findManyByInt(number);
             break;
         default:
@@ -351,7 +366,7 @@ void menuFind() {
 
 void findManyByString(char* string, int findBy) {
     printTableHeadFull();
-    int countFinded = 0;
+    int countFounded = 0;
     for (int i = 0; i < count; i++) {
         char* param = NULL;
         switch (findBy) {
@@ -366,25 +381,31 @@ void findManyByString(char* string, int findBy) {
                 break;
         }
         if (strcmp(param, string) == 0) {
-            if (countFinded != 0)  printTableUnderline();
+            if (countFounded != 0)  printTableUnderline();
             printTableBody(consumers[i], i);
-            countFinded++;
+            countFounded++;
         }
     }
     printTableBottom();
+    setColorSuccess();
+    printf("%d consumer(s) was(were) found\n", countFounded);
+    resetColor();
 }
 
 void findManyByInt(int number) {
     printTableHeadFull();
-    int countFinded = 0;
+    int countFounded = 0;
     for (int i = 0; i < count; i++) {
         if (consumers[i].balance == number) {
-            if (countFinded != 0)  printTableUnderline();
+            if (countFounded != 0)  printTableUnderline();
             printTableBody(consumers[i], i);
-            countFinded++;
+            countFounded++;
         }
     }
     printTableBottom();
+    setColorSuccess();
+    printf("%d consumer(s) was(were) found\n", countFounded);
+    resetColor();
 }
 
 void menuDelete() {
@@ -394,7 +415,7 @@ void menuDelete() {
 
     setColorMenu();
     printf("Delete by:\n");
-    printf("1: order\n2: name\n3: surname\n4: email\n5: balance\n> ");
+    printf("\t1: order\t\t3: surname\t\t\t5: balance\n\t2: name\t\t\t4: email\n> ");
     resetColor();
 
     char deleteByString[100] = "";
@@ -405,6 +426,7 @@ void menuDelete() {
    
 
     char string[100];
+    char numberString[100];
     int number;
     switch (deleteBy) {
         case 1:
@@ -444,8 +466,12 @@ void menuDelete() {
             setColorMenu();
             printf("Please, enter consumers' balance to delete: ");
             resetColor();
-            scanf("%d", &number);
-            
+            scanf("%s", numberString);
+            if (!isdigit(numberString[0])) {
+                printError(UNEXPECTED_COMMAND);
+                break;
+            }
+            number = atoi(numberString);
             deleteManyByInt(number);
             break;
         default:
@@ -465,7 +491,7 @@ void deleteOneByOrder(int order) {
         consumers[i] = consumers[i + 1];
     }
     count--;
-    printf("1 consumer was deleted\n");
+    printSuccess("1 consumer was deleted\n");
 }
 
 void deleteManyByString(const char* string, int deleteBy) {
@@ -505,7 +531,9 @@ void deleteManyByString(const char* string, int deleteBy) {
         }
     }
     count -= countDeleted;
-    printf("%d consumer(s) was deleted\n\n", countDeleted);
+    setColorSuccess();
+    printf("%d consumer(s) was(were) deleted\n", countDeleted);
+    resetColor();
 }
 
 void deleteManyByInt(int number) {
@@ -520,7 +548,9 @@ void deleteManyByInt(int number) {
         }
     }
     count -= countDeleted;
-    printf("%d consumer(s) was deleted\n\n", countDeleted);
+    setColorSuccess();
+    printf("%d consumer(s) was deleted\n", countDeleted);
+    resetColor();
 }
 
 
@@ -528,7 +558,7 @@ void deleteManyByInt(int number) {
 void menuSort() {
     setColorMenu();
     printf("Sort by:\n");
-    printf("1: name\n2: surname\n3: email\n4: balance\n> ");
+    printf("\t1: name\t\t\t3: email\n\t2: surname\t\t4: balance\n> ");
     resetColor();
 
     char sortByString[100] = "";
