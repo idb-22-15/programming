@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "NaturalNumber.cpp"
-#include "PoliNumber.cpp"
-#include "ShiftingArray.cpp"
-#include "StrangeNumber.cpp"
-#include "MagicNumber.cpp"
+#include "src/NaturalNumber.cpp"
+#include "src/PoliNumber.cpp"
+#include "src/ShiftingArray.cpp"
+#include "src/StrangeNumber.cpp"
+#include "src/MagicNumber.cpp"
 
 
 void variant11() {
