@@ -37,10 +37,10 @@ public:
 	}
 
 	bool isPrime() {
-		if (this->number == 1) return false;
+		if (this->number <= 1) return false;
 
 		int count = 0;
-		for (int i = 1; i <= this->number; i++) {
+		for (int i = 1; i <= sqrt(this->number) + 1; i++) {
 			if (this->number % i == 0) {
 				count++;
 			}
@@ -55,7 +55,7 @@ public:
 };
 
 void variant11() {
-	NaturalNumber array[100] = { 1,2,3 };
+	NaturalNumber array[100];
 
 	for (int i = 1; i < 100; i++) {
 		array[i] = NaturalNumber(i);
@@ -65,6 +65,45 @@ void variant11() {
 		if (array[i].isPrime()) printf("%d\n", array[i].value());
 	}
 }
+
+
+//13
+class PoliNumber {
+private:
+	int number;
+
+public:
+	PoliNumber(int number) {
+		this->number = number;
+	}
+
+	int value() {
+		return this->number;
+	}
+
+	bool isPalindrome() {
+		if (this->number < 0) return false;
+
+    int reversed = 0;
+		int copyNumber = this->number;
+
+    while (copyNumber != 0) {
+        int remainder = copyNumber % 10;
+        reversed = reversed * 10 + remainder;
+        copyNumber /= 10;
+    }
+
+    if (this->number == reversed) return true;
+		return false;
+	}
+};
+
+
+void variant13() {
+	PoliNumber number = PoliNumber(989);
+	printf("%d", number.isPalindrome());
+}
+
 
 //17
 class ShiftingArray {
@@ -136,6 +175,7 @@ void variant17() {
 	}
 }
 
+
 //20
 class StrangeNumber {
 private: 
@@ -152,9 +192,6 @@ public:
 	}
 
 	bool isRepresentable() {
-		// int a = pow(this->number, 0.5);
-		// int b = pow(this->number, 0.5);
-
 		for (int a = 0; a <= this->number; a++) {
 			for (int b = 0; b <= this->number; b++) {
 				int strangeSum = pow(a, 2) + pow(b, 2);
@@ -167,8 +204,7 @@ public:
 };
 
 void variant20() {
-
-	StrangeNumber array[10] = { 1,2,3,4,5,6,7,8,9,10 };
+	StrangeNumber array[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 	int count = 0;
 	for (int i = 0; i < 10; i++) {
 		if (array[i].isRepresentable()) {
@@ -179,11 +215,65 @@ void variant20() {
 	printf("\nCount: %d", count);
 }
 
+//22
+class MagicNumber {
+private:
+	int number;
+
+public:
+	MagicNumber(int number) {
+		this->number = number;
+	}
+
+	int value() {
+		return this->number;
+	}
+
+	bool isPrime(int number) {
+		if (number <= 1) return false;
+
+		int count = 0;
+		for (int i = 1; i <= sqrt(number) + 1; i++) {
+			if (number % i == 0) {
+				count++;
+			}
+			if (count > 2) return false;
+		}
+		return true;
+	}
+
+	bool isRepresentable() {
+		int accumulator = this->number;
+		
+		for (int n = this->number; n > 0; n--) {
+			if (!this->isPrime(n) || accumulator - n < 0) continue;
+			accumulator -= n;
+		}
+
+		if (accumulator == 0) return true;
+		return false;
+	}
+};
+
+void variant22() {
+	MagicNumber array[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+	int count = 0;
+	for (int i = 0; i < 10; i++) {
+		if (array[i].isRepresentable()) {
+			printf("%d\t", array[i].value());
+			count++;
+		}
+	} 
+
+	printf("\nCount: %d", count);
+}
+
 int main() {
-
-	//variant11();
-	//variant17();
-	//variant20();
-
+	// variant11();
+	// variant13();
+	// variant17();
+	// variant20();
+	// variant22();
 }
 
