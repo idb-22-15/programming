@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 // 11
 class NaturalNumber {
@@ -65,7 +66,7 @@ void variant11() {
 	}
 }
 
-
+//17
 class ShiftingArray {
 private:
 	int array[10] = {};
@@ -108,7 +109,7 @@ public:
 
 void variant17() {
 	int baseArray[10] = { 3, 5, 6, 7, 3, 1, 4, 8, 5, 1 };
-	ShiftingArray arr =  ShiftingArray(baseArray);
+	ShiftingArray arr = ShiftingArray(baseArray);
 
 	for (int i = 0; i < 10; i++) {
 		printf("%d\t", arr.getArray()[i]);
@@ -135,9 +136,54 @@ void variant17() {
 	}
 }
 
+//20
+class StrangeNumber {
+private: 
+	int number;
+
+public:
+	StrangeNumber(int number) {
+		this->number = number;
+
+	}
+
+	int value() {
+		return this->number;
+	}
+
+	bool isRepresentable() {
+		// int a = pow(this->number, 0.5);
+		// int b = pow(this->number, 0.5);
+
+		for (int a = 0; a <= this->number; a++) {
+			for (int b = 0; b <= this->number; b++) {
+				int strangeSum = pow(a, 2) + pow(b, 2);
+				if (this->number == strangeSum) return true;
+				
+			}
+		}
+		return false;
+	}
+};
+
+void variant20() {
+
+	StrangeNumber array[10] = { 1,2,3,4,5,6,7,8,9,10 };
+	int count = 0;
+	for (int i = 0; i < 10; i++) {
+		if (array[i].isRepresentable()) {
+			printf("%d\t", array[i].value());
+			count++;
+		}
+	}
+	printf("\nCount: %d", count);
+}
+
 int main() {
 
 	//variant11();
 	//variant17();
+	//variant20();
+
 }
 
