@@ -28,13 +28,13 @@ void variant17() {
 	ShiftingArray arr = ShiftingArray(baseArray);
 
 	for (int i = 0; i < 10; i++) {
-		printf("%d\t", arr.getArray()[i]);
+		printf("%d\t", arr.value()[i]);
 	}
 
 	printf("\n");
 	arr.shiftRight(2);
 	for (int i = 0; i < 10; i++) {
-		printf("%d\t", arr.getArray()[i]);
+		printf("%d\t", arr.value()[i]);
 	}
 	printf("\n\n");
 

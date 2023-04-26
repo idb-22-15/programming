@@ -1,3 +1,5 @@
+#pragma once
+
 class ShiftingArray {
 private:
 	int array[10] = {};
@@ -33,7 +35,7 @@ public:
 		}
 	}
 
-	int* getArray() {
+	int* value() {
 		return this->array;
 	}
 };

@@ -9,11 +9,11 @@ public:
 	NaturalNumber() {
 	}
 
-	NaturalNumber(int n) {
-		this->number = n;
-		if (!this->isNatural()) {
+	NaturalNumber(int number) {
+		if (!this->isNatural(number)) {
 			throw "Number is not natural";
 		}
+		this->number = number;
 	}
 
 	int value() {
