@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <iostream>
+
 #include "src/NaturalNumber.cpp"
 #include "src/PoliNumber.cpp"
 #include "src/ShiftingArray.cpp"
 #include "src/StrangeNumber.cpp"
 #include "src/MagicNumber.cpp"
-
+#include "src/MaybeNumberOfDifFOfCubes.cpp"
 
 void variant11() {
 	NaturalNumber array[100];
@@ -64,6 +66,17 @@ void variant20() {
 	printf("\nCount: %d", count);
 }
 
+void variant21() {
+	MaybeNumberOfDifFOfCubes arr[] = { 7, 19, 26, 50, 100, 124};
+
+  int count = 0;
+	for (int i = 0; i < 6; i++) {
+		std::cout << arr[i].value() << ' ' << arr[i].isRepresentable() << std::endl;
+    if (arr[i].isRepresentable()) count++;
+	}
+  std::cout << count;
+}
+
 void variant22() {
 	MagicNumber array[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -83,6 +96,7 @@ int main() {
 	// variant13();
 	// variant17();
 	// variant20();
+	// variant21();
 	// variant22();
 }
 
