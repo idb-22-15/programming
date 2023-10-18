@@ -1,10 +1,11 @@
 #include <iostream>
 #include "List.cpp"
 
-int minOfArr(int arr[10], int length) {
+int min_of_arr(int arr[10], int length) {
   int min = arr[0];
   for (int i = 0; i < length; i++) {
-    if (arr[i] < min) min = arr[i];
+    if (arr[i] < min)
+      min = arr[i];
   }
   return min;
 }
@@ -28,33 +29,34 @@ int main() {
 
   std::cout << "=====" << std::endl;
 
-  List arrOfListCols[10];
-  for (int i = 0; i < cols; i++) arrOfListCols[i].setLength(rows);
-  
+  List arr_of_list_cols[10];
+  for (int i = 0; i < cols; i++)
+    arr_of_list_cols[i].set_length(rows);
+
   for (int j = 0; j < cols; j++) {
     for (int i = 0; i < rows; i++) {
-      arrOfListCols[j].getList()[i] = matrix[i][j];
+      arr_of_list_cols[j].get_list()[i] = matrix[i][j];
     }
   }
 
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
-      std::cout << arrOfListCols[i].getList()[j] << ' ';
+      std::cout << arr_of_list_cols[i].get_list()[j] << ' ';
     }
     std::cout << std::endl;
   }
 
   std::cout << "=====" << std::endl;
 
-  int arrOfMaxValuesOfCols[10];
+  int arr_of_max_values_of_cols[10];
   for (int i = 0; i < cols; i++) {
-    arrOfMaxValuesOfCols[i] = arrOfListCols[i].getMax();
-    std::cout << arrOfMaxValuesOfCols[i] << std::endl;
+    arr_of_max_values_of_cols[i] = arr_of_list_cols[i].get_max();
+    std::cout << arr_of_max_values_of_cols[i] << std::endl;
   }
 
   std::cout << "=====" << std::endl;
-  
-  std::cout << minOfArr(arrOfMaxValuesOfCols, cols) << std::endl;
 
-  std::cout << arrOfListCols[0] * arrOfListCols[1];
+  std::cout << min_of_arr(arr_of_max_values_of_cols, cols) << std::endl;
+
+  std::cout << arr_of_list_cols[0] * arr_of_list_cols[1];
 }

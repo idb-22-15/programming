@@ -1,31 +1,27 @@
-#pragma once
-
 class PoliNumber {
-private:
-	int number;
+ private:
+  int number;
 
-public:
-	PoliNumber(int number) {
-		this->number = number;
-	}
+ public:
+  PoliNumber(int number) { this->number = number; }
 
-	int value() {
-		return this->number;
-	}
+  int value() { return this->number; }
 
-	bool isPalindrome() {
-		if (this->number < 0) return false;
+  bool isPalindrome() {
+    if (this->number < 0)
+      return false;
 
     int reversed = 0;
-		int copyNumber = this->number;
+    int copyNumber = this->number;
 
     while (copyNumber != 0) {
-        int remainder = copyNumber % 10;
-        reversed = reversed * 10 + remainder;
-        copyNumber /= 10;
+      int remainder = copyNumber % 10;
+      reversed = reversed * 10 + remainder;
+      copyNumber /= 10;
     }
 
-    if (this->number == reversed) return true;
-		return false;
-	}
+    if (this->number == reversed)
+      return true;
+    return false;
+  }
 };
