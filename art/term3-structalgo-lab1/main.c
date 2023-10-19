@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -57,7 +58,7 @@ void read_string_from_file(char* string, int length, const char* filename) {
   FILE* file = fopen(filename, "r");
 
   if (file == NULL) {
-    printf("Error");
+    perror("Error");
     return;
   }
 
@@ -68,7 +69,7 @@ void read_string_from_file(char* string, int length, const char* filename) {
 void write_string_to_file(char* string, const char* filename) {
   FILE* file = fopen(filename, "w");
   if (file == NULL) {
-    printf("Error");
+    perror("Error");
     return;
   }
 
