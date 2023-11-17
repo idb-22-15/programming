@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "get_string.h"
+
 void mutate_string(char* string, int length) {
   char* res_string = string;
 
@@ -26,41 +28,6 @@ void mutate_string(char* string, int length) {
   res_string[res_string_index] = '\0';
 }
 
-void handle_error(char* string) {
-  if (string == NULL) {
-    printf("Error");
-    exit(1);
-  }
-}
-
-char* get_string_by_malloc(FILE* stream) {
-  char* string = NULL;
-  string = (char*)malloc(sizeof(char));
-  handle_error(string);
-
-  char c = 0;
-  while ((c = getc(stream)) != '\n') {
-    if (c == EOF)
-      break;
-    char* tmp = NULL;
-    tmp = (char*)malloc((strlen(string) + 1) * sizeof(char));
-    handle_error(string);
-
-    strcpy(tmp, string);
-
-    string = (char*)malloc((strlen(string) + 1) * sizeof(char));
-    handle_error(string);
-
-    strcpy(string, tmp);
-    string[strlen(string)] = c;
-
-    free(tmp);
-    // printf("%s\n", string);
-  }
-  // string[strlen(string) - 1] = '\0';
-  return string;
-}
-
 void task1() {
   char* string = get_string_by_malloc(stdin);
   printf("%s\n", string);
@@ -69,27 +36,6 @@ void task1() {
 
   free(string);
   string = NULL;
-}
-
-char* get_string_by_realloc(FILE* stream) {
-  char* string = NULL;
-
-  int len_allocated = 5;
-  string = calloc(len_allocated, sizeof(char));
-  handle_error(string);
-
-  int c = 0;
-  while ((c = getc(stream)) != '\n') {
-    if (strlen(string) + 1 > len_allocated) {
-      len_allocated += 5;
-      string = realloc(string, len_allocated * sizeof(char));
-      handle_error(string);
-    }
-
-    string[strlen(string)] = c;
-  }
-
-  return string;
 }
 
 void task2() {

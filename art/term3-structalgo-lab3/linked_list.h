@@ -4,10 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-static bool is_stream_end(char c);
-
 typedef struct linked_list {
-  int value;
+  char value;
   struct linked_list* next;
 } linked_list;
 
@@ -43,4 +41,5 @@ void ll_insert_after(linked_list* head, unsigned index, int value);
 void ll_reverse(linked_list** p_head);
 void ll_slice(linked_list** p_head, unsigned start_index, unsigned end_index);
 
+void ll_write_to_stream(linked_list* head, FILE* stream);
 #endif

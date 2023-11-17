@@ -1,6 +1,8 @@
 *
 !/**/
 !*.*
+!Makefile
+**/tmp/
 
 # Prerequisites
 *.d
@@ -40,3 +42,4 @@ x64
 .vscode
 Debug
 build
+

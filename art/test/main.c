@@ -1,9 +1,13 @@
+
+#include <limits.h>
+#include <pthread.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "linked_list.h"
+#include <unistd.h>
+#include "linked_list.c"
 
 char* get_string() {
   char* string = NULL;
@@ -23,15 +27,17 @@ char* get_string() {
   return string;
 }
 
-int main() {
-  // char* string = get_string();
+void test_get_string() {
+  char* string = get_string();
 
-  // printf("%s", string);
-  // printf("%d", strlen(string));
+  printf("%s", string);
+  printf("%d", (int)strlen(string));
 
-  // free(string);
-  // string = NULL;
+  free(string);
+  string = NULL;
+}
 
+void test_linked_list() {
   linked_list* list = malloc(sizeof(linked_list));
   list->value = 66;
   list->next = ll_new_node(67);
@@ -52,7 +58,7 @@ int main() {
   ll_free(&list);
 
   int arr[] = {1, 2, 3, 4};
-  linked_list* list2 = ll_from_array(arr, 4);
+  linked_list* list2 = ll_new_from_array(arr, 4);
   ll_reverse(&list2);
   printf("\n======\n");
   ll_println(list2);
@@ -71,4 +77,35 @@ int main() {
 
   ll_free(&string_list);
   ll_free(&string_copy);
+}
+
+void abortcontroller() {
+  printf("stop\n");
+}
+
+void* compute(void* arg) {
+  char* message = (char*)arg;
+  printf("%s\n", message);
+
+  signal(SIGINT, abortcontroller);
+
+  size_t* sum = malloc(sizeof(size_t));
+  *sum = 0;
+  for (size_t i = 0; i < 3; i++) {
+    *sum += i;
+    printf("%lu\n", *sum);
+    sleep(1);
+  }
+  return sum;
+}
+
+int main(int argc, char** argv) {
+  test_linked_list();
+  pthread_t thread;
+  size_t* value;
+
+  pthread_create(&thread, NULL, compute, (void*)"hello thread");
+  pthread_join(thread, (void**)&value);
+
+  printf("thread done\nvalue: %lu", *value);
 }
