@@ -9,7 +9,12 @@ typedef struct linked_list {
   struct linked_list* next;
 } linked_list;
 
-static bool ll_is_empty(linked_list* head);
+bool ll_is_empty(linked_list* head);
+bool ll_is_end(linked_list* node);
+
+int ll_get_index(linked_list* head, linked_list* node);
+int ll_get_node_value(linked_list* node);
+void ll_set_node_value(linked_list* node, int value);
 
 static void ll_handle_error(linked_list* head);
 static void ll_handle_error_p(linked_list** p_head);
@@ -20,6 +25,7 @@ linked_list* ll_new_from_stream(FILE* stream);
 linked_list* ll_new_from_array(int array[], unsigned array_len);
 
 void ll_free(linked_list** p_head);
+void ll_make_empty(linked_list** p_head);
 
 int ll_len(linked_list* head);
 

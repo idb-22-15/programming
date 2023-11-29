@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-static bool is_stream_end(char c);
-
 typedef struct double_list {
   struct double_list* prev;
   char value;
@@ -13,7 +11,13 @@ typedef struct double_list {
 
 } double_list;
 
-static bool dl_is_empty(double_list* head);
+bool dl_is_empty(double_list* head);
+bool dl_is_start(double_list* node);
+bool dl_is_end(double_list* node);
+
+int dl_get_index(double_list* head, double_list* node);
+int dl_get_node_value(double_list* node);
+void dl_set_node_value(double_list* node, int value);
 
 static void dl_handle_error(double_list* head);
 static void dl_handle_error_p(double_list** p_head);
@@ -24,6 +28,7 @@ double_list* dl_new_from_stream(FILE* stream);
 double_list* dl_new_from_array(int array[], unsigned array_len);
 
 void dl_free(double_list** p_head);
+void dl_make_empty(double_list** p_head);
 
 int dl_len(double_list* head);
 

@@ -9,6 +9,40 @@ bool dl_is_empty(double_list* head) {
   return head == NULL;
 }
 
+bool dl_is_start(double_list* node) {
+  dl_handle_error(node);
+  return node->prev == NULL;
+}
+
+bool dl_is_end(double_list* node) {
+  dl_handle_error(node);
+  return node->next == NULL;
+}
+
+int dl_get_index(double_list* head, double_list* node) {
+  dl_handle_error(head);
+  dl_handle_error(node);
+  double_list* current_node = head;
+  int current_index = 0;
+  while (current_node != NULL) {
+    if (node == current_node)
+      return current_index;
+    current_node = current_node->next;
+    current_index++;
+  }
+  return -1;
+}
+
+int dl_get_node_value(double_list* node) {
+  dl_handle_error(node);
+  return node->value;
+};
+
+void dl_set_node_value(double_list* node, int value) {
+  dl_handle_error(node);
+  node->value = value;
+}
+
 static void dl_handle_error(double_list* head) {
   if (dl_is_empty(head)) {
     exit(1);
@@ -91,6 +125,11 @@ void dl_free(double_list** p_head) {
     free(*p_head);
     *p_head = current_node;
   }
+}
+
+void dl_make_empty(double_list** p_head) {
+  dl_free(p_head);
+  *p_head = NULL;
 }
 
 int dl_len(double_list* head) {

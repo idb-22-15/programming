@@ -9,8 +9,38 @@ bool ll_is_empty(linked_list* head) {
   return head == NULL;
 }
 
+bool ll_is_end(linked_list* node) {
+  ll_handle_error(node);
+  return node->next == NULL;
+}
+
+int ll_get_index(linked_list* head, linked_list* node) {
+  ll_handle_error(head);
+  ll_handle_error(node);
+  linked_list* current_node = head;
+  int current_index = 0;
+  while (current_node != NULL) {
+    if (node == current_node)
+      return current_index;
+    current_node = current_node->next;
+    current_index++;
+  }
+  return -1;
+}
+
+int ll_get_node_value(linked_list* node) {
+  ll_handle_error(node);
+  return node->value;
+}
+
+void ll_set_node_value(linked_list* node, int value) {
+  ll_handle_error(node);
+  node->value = value;
+}
+
 static void ll_handle_error(linked_list* head) {
   if (ll_is_empty(head)) {
+    printf("error: list is empty");
     exit(1);
   }
 }
@@ -89,6 +119,11 @@ void ll_free(linked_list** p_head) {
     free(*p_head);
     *p_head = current_node;
   }
+}
+
+void ll_make_empty(linked_list** p_head) {
+  ll_free(p_head);
+  *p_head = NULL;
 }
 
 int ll_len(linked_list* head) {
