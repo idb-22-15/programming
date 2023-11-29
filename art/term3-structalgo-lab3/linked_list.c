@@ -40,14 +40,16 @@ void ll_set_node_value(linked_list* node, int value) {
 
 static void ll_handle_error(linked_list* head) {
   if (ll_is_empty(head)) {
-    printf("error: list is empty");
+    printf("error: list node is empty\n");
     exit(1);
   }
 }
 
 static void ll_handle_error_p(linked_list** p_head) {
-  if (p_head == NULL || ll_is_empty(*p_head))
+  if (p_head == NULL || ll_is_empty(*p_head)) {
+    printf("error: list node is empty\n");
     exit(1);
+  }
 }
 
 linked_list* ll_new_node(int value) {
@@ -115,9 +117,11 @@ void ll_free(linked_list** p_head) {
   linked_list* current_node = *p_head;
 
   while (current_node != NULL) {
+    linked_list* tmp = current_node;
     current_node = current_node->next;
-    free(*p_head);
-    *p_head = current_node;
+
+    free(tmp);
+    tmp = NULL;
   }
 }
 
@@ -269,13 +273,7 @@ void ll_insert_after(linked_list* head, unsigned index, int value) {
   ll_handle_error(head);
 
   linked_list* new_node = ll_new_node(value);
-  int current_index = 0;
-  linked_list* current_node = head;
-
-  while (current_index != index) {
-    current_node = current_node->next;
-    current_index++;
-  }
+  linked_list* current_node = ll_get_node_by_index(head, index);
   new_node->next = current_node->next;
   current_node->next = new_node;
 }

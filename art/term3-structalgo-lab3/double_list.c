@@ -45,13 +45,16 @@ void dl_set_node_value(double_list* node, int value) {
 
 static void dl_handle_error(double_list* head) {
   if (dl_is_empty(head)) {
+    printf("error: list node is empty\n");
     exit(1);
   }
 }
 
 static void dl_handle_error_p(double_list** p_head) {
-  if (p_head == NULL || dl_is_empty(*p_head))
+  if (p_head == NULL || dl_is_empty(*p_head)) {
+    printf("error: list node is empty\n");
     exit(1);
+  }
 }
 
 double_list* dl_new_node(int value, double_list* prev) {
@@ -121,9 +124,11 @@ void dl_free(double_list** p_head) {
   double_list* current_node = *p_head;
 
   while (current_node != NULL) {
+    double_list* tmp = current_node;
     current_node = current_node->next;
-    free(*p_head);
-    *p_head = current_node;
+
+    free(tmp);
+    tmp = NULL;
   }
 }
 
@@ -273,20 +278,38 @@ double_list* dl_get_node_by_index(double_list* head, unsigned index) {
   return current_node;
 }
 
+double_list* dl_get_last_node(double_list* head) {
+  dl_handle_error(head);
+  double_list* current_node = head;
+  while (current_node->next != NULL) {
+    current_node = current_node->next;
+  }
+  return current_node;
+}
+
 void dl_insert_after(double_list* head, unsigned index, int value) {
   dl_handle_error(head);
 
   double_list* new_node = dl_new_node(value, NULL);
-  unsigned current_index = 0;
-  double_list* current_node = head;
-
-  while (current_index != index) {
-    current_node = current_node->next;
-    current_index++;
-  }
+  double_list* current_node = dl_get_node_by_index(head, index);
   new_node->next = current_node->next;
   new_node->prev = current_node;
   current_node->next = new_node;
+  if (new_node->next != NULL)
+    new_node->next->prev = new_node;
+}
+
+void dl_insert_before(double_list** p_head, unsigned index, int value) {
+  dl_handle_error_p(p_head);
+
+  double_list* new_node = dl_new_node(value, NULL);
+  double_list* current_node = dl_get_node_by_index(*p_head, index);
+  new_node->next = current_node;
+  if (current_node->prev != NULL)
+    current_node->prev->next = new_node;
+  else
+    *p_head = new_node;
+  current_node->prev = new_node;
 }
 
 void dl_reverse(double_list** p_head) {
@@ -330,18 +353,9 @@ void dl_slice(double_list** p_head, unsigned start_index, unsigned end_index) {
 
   *p_head = current_node;
 
-  // double_list* prev_node = NULL;
-
-  // while (current_index != end_index && current_node != NULL) {
-  //   prev_node = current_node;
-  //   current_node = current_node->next;
-  //   current_index++;
-  // }
-
   if (current_index == end_index && current_node != NULL) {
     current_node->prev->next = NULL;
     dl_free(&current_node);
-    // prev_node->next = NULL;
   }
 }
 

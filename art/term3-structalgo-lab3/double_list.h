@@ -45,8 +45,10 @@ int dl_pop_first(double_list** p_head);
 int dl_pop_index(double_list** p_head, unsigned index);
 
 double_list* dl_get_node_by_index(double_list* head, unsigned index);
+double_list* dl_get_last_node(double_list* head);
 
 void dl_insert_after(double_list* head, unsigned index, int value);
+void dl_insert_before(double_list** p_head, unsigned index, int value);
 void dl_reverse(double_list** p_head);
 void dl_slice(double_list** p_head, unsigned start_index, unsigned end_index);
 
