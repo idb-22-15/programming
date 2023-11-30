@@ -241,18 +241,19 @@ int dl_pop_index(double_list** p_head, unsigned index) {
   if (index == 0)
     return dl_pop_first(p_head);
 
-  double_list* prev_node = NULL;
-  double_list* current_node = *p_head;
-  unsigned current_index = 0;
+  double_list* current_node = dl_get_node_by_index(*p_head, index);
+  double_list* prev_node = current_node->prev;
+  // unsigned current_index = 0;
 
-  while (current_node != NULL && current_index != index) {
-    prev_node = current_node;
-    current_node = current_node->next;
-    current_index++;
-  }
+  // while (current_node != NULL && current_index != index) {
+  //   prev_node = current_node;
+  //   current_node = current_node->next;
+  //   current_index++;
+  // }
 
   prev_node->next = current_node->next;
-  current_node->next->prev = prev_node;
+  if (current_node->next != NULL)
+    current_node->next->prev = prev_node;
 
   int value = current_node->value;
   free(current_node);

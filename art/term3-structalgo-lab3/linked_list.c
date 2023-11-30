@@ -233,15 +233,15 @@ int ll_pop_index(linked_list** p_head, unsigned index) {
   if (index == 0)
     return ll_pop_first(p_head);
 
-  linked_list* prev_node = NULL;
-  linked_list* current_node = *p_head;
-  unsigned current_index = 0;
+  linked_list* prev_node = ll_get_node_by_index(*p_head, index - 1);
+  linked_list* current_node = ll_get_node_by_index(*p_head, index);
+  // unsigned current_index = 0;
 
-  while (current_node != NULL && current_index != index) {
-    prev_node = current_node;
-    current_node = current_node->next;
-    current_index++;
-  }
+  // while (current_node != NULL && current_index != index) {
+  //   prev_node = current_node;
+  //   current_node = current_node->next;
+  //   current_index++;
+  // }
 
   prev_node->next = current_node->next;
 
