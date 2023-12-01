@@ -7,12 +7,15 @@
 
 #define BUFFER_SIZE 256
 
+#define BLUE(string) "\x1b[36m" string "\x1b[0m"
+#define RED(string) "\x1b[31m" string "\x1b[0m"
+
 void ll_println_with_pointer(linked_list* head, linked_list* pointer) {
   ll_handle_error(head);
   linked_list* current_node = head;
   while (current_node != NULL) {
     if (current_node == pointer)
-      printf("[ %c ] ", current_node->value);
+      printf(BLUE("[ %c ] "), current_node->value);
     else
       printf("%c ", current_node->value);
     current_node = current_node->next;
@@ -25,7 +28,7 @@ void dl_println_with_pointer(double_list* head, double_list* pointer) {
   double_list* current_node = head;
   while (current_node != NULL) {
     if (current_node == pointer)
-      printf("[ %c ] ", current_node->value);
+      printf(BLUE("[ %c ] "), current_node->value);
     else
       printf("%c ", current_node->value);
     current_node = current_node->next;
@@ -38,7 +41,7 @@ void dl_println_reversed_with_pointer(double_list* head, double_list* pointer) {
   double_list* current_node = dl_get_last_node(head);
   while (current_node != NULL) {
     if (current_node == pointer)
-      printf("[ %c ] ", current_node->value);
+      printf(BLUE("[ %c ] "), current_node->value);
     else
       printf("%c ", current_node->value);
     current_node = current_node->prev;
@@ -48,14 +51,14 @@ void dl_println_reversed_with_pointer(double_list* head, double_list* pointer) {
 
 void print_start_menu() {
   printf(
-      "Выберете команду\n"
+      BLUE("Выберете команду\n")
       "\t1/new      создать список\n"
       "\t2/q        выйти в меню\n");
 }
 
 void menu_ll_print_help() {
   printf(
-      "Выберете команду:\n"
+      BLUE("Выберете команду:\n")
       "\t1/empty    сделать список пустым\n"
       "\t2/isempty  проверить на пустоту\n"
       "\t3/tostart  установить указатель в начало\n"
@@ -72,19 +75,19 @@ void menu_ll_print_help() {
 }
 
 void println_command_does_not_exist() {
-  printf("Команда не существует\n");
+  printf(RED("Команда не существует\n"));
 }
 
 void println_list_is_empty() {
-  printf("Список пустой\n");
+  printf(RED("Список пустой\n"));
 }
 
 void println_prev_node_does_not_exist() {
-  printf("Предыдущий элемент не существует\n");
+  printf(RED("Предыдущий элемент не существует\n"));
 }
 
 void println_next_node_does_not_exist() {
-  printf("Следующий элемент не существует\n");
+  printf(RED("Следующий элемент не существует\n"));
 }
 
 void menu_ll_choose_task(linked_list* list) {
@@ -237,7 +240,7 @@ void menu_ll() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "new")) {
-      list = ll_new_node(0);
+      list = ll_new_node('0');
       menu_ll_choose_task(list);
     }
 
@@ -251,7 +254,7 @@ void menu_ll() {
 
 void menu_dl_print_help() {
   printf(
-      "Выберете команду:\n"
+      BLUE("Выберете команду:\n")
       "\t1/empty    сделать список пустым\n"
       "\t2/isempty  проверить на пустоту\n"
       "\t3/tostart  установить указатель в начало\n"
@@ -510,7 +513,7 @@ void menu_dl() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "new")) {
-      list = dl_new_node(0, NULL);
+      list = dl_new_node('0', NULL);
       menu_dl_choose_task(list);
     }
 
@@ -528,7 +531,7 @@ void menu_choose_list_type() {
 
   while (!is_ended) {
     printf(
-        "Выберете вид списка:\n"
+        BLUE("Выберете вид списка:\n")
         "\t1          связный\n"
         "\t2          двухсвязный\n"
         "\tq          выйти\n");
