@@ -101,11 +101,36 @@ int* shaker_sorted(const int* const src_arr, unsigned len) {
   return arr;
 }
 
-void quick_sort(int* arr, unsigned len) {}
+int partititate_array(int arr[], unsigned len, unsigned low, unsigned high) {
+  unsigned pivot_index = high;
+  int pivot_value = arr[pivot_index];
+
+  unsigned new_pivot_index = low;
+  for (int i = low; i <= high; i++) {
+    println_array_with_pointers(arr, len, &arr[low], &arr[i]);
+    if (arr[i] < pivot_value) {
+      swap(&arr[low], &arr[i]);
+      new_pivot_index++;
+    }
+  }
+  println_array_with_pointers(arr, len, &arr[new_pivot_index], &arr[high]);
+  swap(&arr[new_pivot_index], &arr[high]);
+  return new_pivot_index;
+}
+
+void quick_sort(int* arr, unsigned len, unsigned low, unsigned high) {
+  if (low < high) {
+    unsigned pivot_index = partititate_array(arr, len, low, high);
+    quick_sort(arr, len, low, pivot_index - 1);
+    quick_sort(arr, len, pivot_index + 1, high);
+  }
+}
 
 int* quick_sorted(const int* const src_arr, unsigned len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
+
+  quick_sort(arr, len, 0, len - 1);
 
   println_array(arr, len);
   return arr;
@@ -114,8 +139,8 @@ int* quick_sorted(const int* const src_arr, unsigned len) {
 int main() {
   const int len = 10;
   const int arr[10] = {6, 40, 3, 9, 6, 10, 0, -80, 100, 90};
-
   // bubble_sorted(arr, len);
   // selection_sorted(arr, len);
-  shaker_sorted(arr, len);
+  // shaker_sorted(arr, len);
+  quick_sorted(arr, len);
 }
