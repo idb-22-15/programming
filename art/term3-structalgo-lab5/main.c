@@ -9,14 +9,14 @@ void swap(int* first, int* second) {
   *second = tmp;
 }
 
-void println_array(const int* const arr, unsigned len) {
+void println_array(const int arr[], unsigned len) {
   for (int i = 0; i < len; i++) {
     printf("%d\t", arr[i]);
   }
   printf("\n");
 }
 
-void println_array_with_pointers(const int* const arr,
+void println_array_with_pointers(const int arr[],
                                  unsigned len,
                                  const int* const p1,
                                  const int* const p2) {
@@ -29,31 +29,24 @@ void println_array_with_pointers(const int* const arr,
   printf("\n");
 }
 
-int* copy_arr(const int* const src_arr, const unsigned len) {
+int* copy_arr(const int src_arr[], unsigned len) {
   int* copy = calloc(sizeof(int), len);
   memcpy(copy, src_arr, sizeof(int) * len);
   return copy;
 }
 
-int* bubble_sorted(const int* const src_arr, const unsigned len) {
-  int* arr = copy_arr(src_arr, len);
-  println_array(arr, len);
-
+bool is_sorted(int arr[], unsigned len) {
+  bool is_sorted = true;
   for (int i = 0; i < len - 1; i++) {
-    for (int j = 0; j < len - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) {
-        swap(&arr[j], &arr[j + 1]);
-      }
-      println_array_with_pointers(arr, len, &arr[j], &arr[j + 1]);
+    if (arr[i] > arr[i + 1]) {
+      is_sorted = false;
+      break;
     }
   }
-
-  println_array(arr, len);
-
-  return arr;
+  return is_sorted;
 }
 
-int* selection_sorted(const int* const src_arr, unsigned len) {
+int* selection_sorted(const int src_arr[], unsigned len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
@@ -63,26 +56,65 @@ int* selection_sorted(const int* const src_arr, unsigned len) {
       if (arr[j] < arr[min_index])
         min_index = j;
     }
-    swap(&arr[i], &arr[min_index]);
     println_array_with_pointers(arr, len, &arr[i], &arr[min_index]);
+    swap(&arr[i], &arr[min_index]);
   }
 
   println_array(arr, len);
   return arr;
 }
 
-int* shaker_sorted(const int* const src_arr, unsigned len) {
+int* insertion_sorted(const int src_arr[], unsigned len) {
+  int* arr = copy_arr(src_arr, len);
+  println_array(arr, len);
+
+  for (int i = 0; i < len - 1; i++) {
+    if (arr[i] > arr[i + 1]) {
+      unsigned index = i;
+      while (index >= 0 && arr[index] > arr[index + 1]) {
+        println_array_with_pointers(arr, len, &arr[index], &arr[index + 1]);
+        swap(&arr[index], &arr[index + 1]);
+        if (index == 0)
+          break;
+        index--;
+      }
+    }
+  }
+
+  println_array(arr, len);
+  return arr;
+}
+
+int* bubble_sorted(const int src_arr[], const unsigned len) {
+  int* arr = copy_arr(src_arr, len);
+  println_array(arr, len);
+
+  for (int i = 0; i < len - 1; i++) {
+    for (int j = 0; j < len - i - 1; j++) {
+      println_array_with_pointers(arr, len, &arr[j], &arr[j + 1]);
+      if (arr[j] > arr[j + 1]) {
+        swap(&arr[j], &arr[j + 1]);
+      }
+    }
+  }
+
+  println_array(arr, len);
+
+  return arr;
+}
+
+int* shaker_sorted(const int src_arr[], unsigned len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
   for (int i = 0; i < len / 2; i++) {
     bool is_swapped = false;
     for (int j = i; j < len - i - 1; j++) {
+      println_array_with_pointers(arr, len, &arr[j], &arr[j + 1]);
       if (arr[j] > arr[j + 1]) {
         swap(&arr[j], &arr[j + 1]);
         is_swapped = true;
       }
-      println_array_with_pointers(arr, len, &arr[j], &arr[j + 1]);
     }
 
     for (int j = len - i - 2; j > i; j--) {
@@ -118,7 +150,7 @@ int partititate_array(int arr[], unsigned len, unsigned low, unsigned high) {
   return new_pivot_index;
 }
 
-void quick_sort(int* arr, unsigned len, unsigned low, unsigned high) {
+void quick_sort(int arr[], unsigned len, unsigned low, unsigned high) {
   if (low < high) {
     unsigned pivot_index = partititate_array(arr, len, low, high);
     quick_sort(arr, len, low, pivot_index - 1);
@@ -126,7 +158,7 @@ void quick_sort(int* arr, unsigned len, unsigned low, unsigned high) {
   }
 }
 
-int* quick_sorted(const int* const src_arr, unsigned len) {
+int* quick_sorted(const int src_arr[], unsigned len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
@@ -136,11 +168,27 @@ int* quick_sorted(const int* const src_arr, unsigned len) {
   return arr;
 }
 
+void merge_sort(int arr[]) {}
+
+void merge(int arr[], unsigned left, unsigned middle, unsigned right) {}
+
+int* merge_sorted(const int src_arr[], unsigned len) {
+  int* arr = copy_arr(src_arr, len);
+  println_array(arr, len);
+
+  println_array(arr, len);
+  return arr;
+}
+
 int main() {
   const int len = 10;
   const int arr[10] = {6, 40, 3, 9, 6, 10, 0, -80, 100, 90};
-  // bubble_sorted(arr, len);
+
   // selection_sorted(arr, len);
+  // insertion_sorted(arr, len);
+  // bubble_sorted(arr, len);
+
   // shaker_sorted(arr, len);
-  quick_sorted(arr, len);
+
+  // quick_sorted(arr, len);
 }
