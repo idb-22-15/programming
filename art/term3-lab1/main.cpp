@@ -6,21 +6,32 @@ class IAreaComputable {
   virtual float get_area() = 0;
 };
 
+class WrongArgumentException: public std::exception {
+ private:
+  std::string message;
+
+ public:
+  WrongArgumentException(std::string message) {
+    this->message = message;
+  }
+
+  virtual const char* what() const throw() {
+    return message.c_str();
+  }
+};
+
 class Circle : public IAreaComputable {
  private:
   float radius;
 
  public:
-  Circle(float radius) { this->radius = radius; }
+  Circle(float radius) { 
+    if (radius <= 0) throw WrongArgumentException("Radius must be positive number");
+    this->radius = radius; 
+  }
 
   float get_radius() { return radius; }
   float get_area() { return M_PI * radius * radius; }
-};
-
-class RingException : public std::exception {
-  virtual const char* what() const throw() {
-    return "Outer radius must be greater than inner radius";
-  };
 };
 
 class Ring : public IAreaComputable {
@@ -34,7 +45,7 @@ class Ring : public IAreaComputable {
     this->inner_circle = new Circle(inner_radius);
 
     if (outer_circle->get_radius() <= inner_circle->get_radius())
-      throw RingException();
+      throw WrongArgumentException("Outer radius must be greater than inner radius");
   }
 
   ~Ring() {
@@ -54,6 +65,7 @@ class Cylinder : public Ring {
  public:
   Cylinder(float outer_radius, float inner_radius, float heigth)
       : Ring(outer_radius, inner_radius) {
+    if (heigth <= 0) throw WrongArgumentException("Height must be positive number"); 
     this->heigth = heigth;
   }
 
@@ -87,13 +99,40 @@ class Square : public IAreaComputable {
 };
 
 int main() {
-  Circle circle = Circle(10);
-  std::cout << "Circle area: " << circle.get_area() << std::endl;
+  std::cout << "Enter hollow cylinder params" << std::endl;
 
-  Cylinder cylinder = Cylinder(5, 4, 10);
-  std::cout << "Cylinder area: " << cylinder.get_area() << std::endl;
+  bool are_params_correct = true;
 
-  Square square = Square::from_area(cylinder.get_area());
-  std::cout << "Square area: " << square.get_area() << std::endl;
-  std::cout << "Square side: " << square.get_side() << std::endl;
+  float outer_radius;
+  float inner_radius;
+  float height;
+  
+  do {
+
+    std::cout << "Enter outer radius: ";
+    std::cin >> outer_radius;
+
+    std::cout << "Enter inner radius: ";
+    std::cin >> inner_radius;
+
+
+    std::cout << "Enter height: ";
+    std::cin >> height;
+
+    try {
+      Cylinder cylinder = Cylinder(outer_radius, inner_radius, height);
+      are_params_correct = true;
+
+      std::cout << "Cylinder area: " << cylinder.get_area() << std::endl;
+      
+
+      Square square = Square::from_area(cylinder.get_area());
+      std::cout << "Square area: " << square.get_area() << std::endl;
+      std::cout << "Square side: " << square.get_side() << std::endl; 
+
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      are_params_correct = false;
+    };
+  } while(!are_params_correct);
 }
