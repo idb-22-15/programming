@@ -1,5 +1,12 @@
 #include <cmath>
 #include <iostream>
+#include <limits>
+#include <numbers>
+
+// Создать класс, описывающий окружность. Определить площадь круга. 
+// Определить площадь кольца, образованного двумя концентрическими окружностями. 
+// Создать класс-наследник, описывающий цилиндр. 
+// Найти сторону квадрата, имеющего площадь, совпадающую с площадью полной поверхности полого цилиндра. 
 
 class IAreaComputable {
  public:
@@ -15,7 +22,7 @@ class WrongArgumentException: public std::exception {
     this->message = message;
   }
 
-  virtual const char* what() const throw() {
+  const char* what() const throw() {
     return message.c_str();
   }
 };
@@ -31,7 +38,7 @@ class Circle : public IAreaComputable {
   }
 
   float get_radius() { return radius; }
-  float get_area() { return M_PI * radius * radius; }
+  float get_area() { return std::numbers::pi * radius * radius; }
 };
 
 class Ring : public IAreaComputable {
@@ -40,7 +47,7 @@ class Ring : public IAreaComputable {
   Circle* inner_circle;
 
  public:
-  Ring(float outer_radius, float inner_radius) {
+  Ring(float outer_radius, float inner_radius)  {
     this->outer_circle = new Circle(outer_radius);
     this->inner_circle = new Circle(inner_radius);
 
@@ -63,24 +70,26 @@ class Cylinder : public Ring {
   float heigth;
 
  public:
-  Cylinder(float outer_radius, float inner_radius, float heigth)
+  Cylinder(float outer_radius, float inner_radius, float heigth) 
       : Ring(outer_radius, inner_radius) {
     if (heigth <= 0) throw WrongArgumentException("Height must be positive number"); 
     this->heigth = heigth;
   }
 
   float get_outer_side_area() {
-    return 2 * M_PI * outer_circle->get_radius() * heigth;
+    return 2 * std::numbers::pi * outer_circle->get_radius() * heigth;
   }
 
   float get_inner_side_area() {
-    return 2 * M_PI * inner_circle->get_radius() * heigth;
+    return 2 * std::numbers::pi * inner_circle->get_radius() * heigth;
   }
 
   float get_area() {
     return 2 * Ring::get_area() + get_outer_side_area() + get_inner_side_area();
   };
 
+  float get_inner_radius() {return inner_circle->get_radius();}
+  float get_outer_radius() {return outer_circle->get_radius();}
   float get_height() { return heigth; }
 };
 
@@ -98,41 +107,80 @@ class Square : public IAreaComputable {
   float get_area() { return side * side; }
 };
 
+void input_number(std::string message, float& number) {
+  while (std::cout << message && !(std::cin >> number)) {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Invalid input; please re-enter\n";
+}
+}
+
 int main() {
-  std::cout << "Enter hollow cylinder params" << std::endl;
-
-  bool are_params_correct = true;
-
-  float outer_radius;
-  float inner_radius;
-  float height;
+  bool params_correct = true;
   
   do {
+      float circle_radius;
+      input_number("Enter circle radius: ", circle_radius);
+   
+    try {
+      Circle circle = Circle(circle_radius);
+      params_correct = true;
+      std::cout << "Circle area: " << circle.get_area() << std::endl;
+    } catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      params_correct = false;
+    }
+  } while(!params_correct);  
 
-    std::cout << "Enter outer radius: ";
-    std::cin >> outer_radius;
-
-    std::cout << "Enter inner radius: ";
-    std::cin >> inner_radius;
+  std::cout << "==========" << std::endl;
 
 
-    std::cout << "Enter height: ";
-    std::cin >> height;
+  do {
+    std::cout << "Enter ring params" << std::endl;
+
+    float outer_radius;
+    float inner_radius;
+
+    input_number("Enter outer radius: ", outer_radius);
+    input_number("Enter inner radius: ", inner_radius);
+
+    try {
+      Ring ring = Ring(outer_radius, inner_radius);
+      params_correct = true;
+      std::cout << "Ring area: " << ring.get_area() << std::endl;
+    } catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      params_correct = false;
+    }
+  } while(!params_correct);
+
+  params_correct = true;
+
+  std::cout << "==========" << std::endl;
+
+  do {
+    std::cout << "Enter hollow cylinder params" << std::endl;
+
+    float outer_radius;
+    float inner_radius;
+    float height;
+  
+    input_number("Enter outer radius: ", outer_radius);
+    input_number("Enter inner radius: ", inner_radius);
+    input_number("Enter height: ", height);
 
     try {
       Cylinder cylinder = Cylinder(outer_radius, inner_radius, height);
-      are_params_correct = true;
 
       std::cout << "Cylinder area: " << cylinder.get_area() << std::endl;
       
-
       Square square = Square::from_area(cylinder.get_area());
       std::cout << "Square area: " << square.get_area() << std::endl;
       std::cout << "Square side: " << square.get_side() << std::endl; 
 
     } catch (const std::exception& e) {
       std::cerr << e.what() << std::endl;
-      are_params_correct = false;
+      params_correct = false;
     };
-  } while(!are_params_correct);
+  } while(!params_correct);
 }
