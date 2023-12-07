@@ -90,10 +90,12 @@ void println_next_node_does_not_exist() {
   printf(RED("Следующий элемент не существует\n"));
 }
 
-void menu_ll_choose_task(linked_list* list) {
+void menu_ll_choose_task() {
   char choice[BUFFER_SIZE];
   bool is_ended = false;
-  linked_list* pointer = list;
+
+  linked_list* list = NULL;
+  linked_list* pointer = NULL;
 
   bool is_value_taken = false;
   int taken_value;
@@ -104,12 +106,16 @@ void menu_ll_choose_task(linked_list* list) {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "empty")) {
-      ll_make_empty(&list);
-      printf("Список опустошён\n");
+      if (ll_is_empty(list)) println_list_is_empty();
+      else {
+        ll_make_empty(&list);
+        pointer = NULL;
+        printf("Список опустошён\n");
+      }
     }
 
     else if (!strcmp(choice, "2") || !strcmp(choice, "isempty"))
-      ll_is_empty(list) ? println_list_is_empty()
+      ll_is_empty(list) ? printf("Список пустой\n")
                         : printf("Список не пустой\n");
 
     else if (!strcmp(choice, "3") || !strcmp(choice, "tostart")) {
@@ -188,15 +194,15 @@ void menu_ll_choose_task(linked_list* list) {
     }
 
     else if (!strcmp(choice, "10") || !strcmp(choice, "anext")) {
-      if (ll_is_empty(list))
-        println_list_is_empty();
-      else {
         char new_value[BUFFER_SIZE];
         printf("Введите новое значение для создания: ");
         scanf("%s", new_value);
-        ll_insert_after(list, ll_get_index(list, pointer), new_value[0]);
+
+        if (ll_is_empty(list)) {
+          list = ll_new_node(new_value[0]);
+          pointer = list;
+        } else ll_insert_after(list, ll_get_index(list, pointer), new_value[0]);
         ll_println_with_pointer(list, pointer);
-      }
     }
 
     else if (!strcmp(choice, "11") || !strcmp(choice, "p")) {
@@ -232,7 +238,6 @@ void menu_ll() {
   char choice[BUFFER_SIZE];
   bool is_ended = false;
 
-  linked_list* list;
   while (!is_ended) {
     print_start_menu();
 
@@ -240,8 +245,7 @@ void menu_ll() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "new")) {
-      list = ll_new_node('0');
-      menu_ll_choose_task(list);
+      menu_ll_choose_task();
     }
 
     else if (!strcmp(choice, "2") || !strcmp(choice, "q"))
@@ -278,11 +282,12 @@ void menu_dl_print_help() {
       "\th          помощь\n");
 }
 
-void menu_dl_choose_task(double_list* list) {
+void menu_dl_choose_task() {
   char choice[BUFFER_SIZE];
   bool is_ended = false;
 
-  double_list* pointer = list;
+  double_list* list = NULL;
+  double_list* pointer = NULL;
 
   bool is_value_taken = false;
   int taken_value;
@@ -294,12 +299,15 @@ void menu_dl_choose_task(double_list* list) {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "empty")) {
-      dl_make_empty(&list);
-      printf("Список удалён\n");
+      if (dl_is_empty(list)) println_list_is_empty();
+      else {
+        dl_make_empty(&list);
+        printf("Список удалён\n");
+      }
     }
 
     else if (!strcmp(choice, "2") || !strcmp(choice, "isempty"))
-      dl_is_empty(list) ? println_list_is_empty()
+      dl_is_empty(list) ? printf("Список пустой\n")
                         : printf("Список не пустой\n");
 
     else if (!strcmp(choice, "3") || !strcmp(choice, "tostart")) {
@@ -459,15 +467,14 @@ void menu_dl_choose_task(double_list* list) {
     }
 
     else if (!strcmp(choice, "18") || !strcmp(choice, "anext")) {
-      if (dl_is_empty(list))
-        println_list_is_empty();
-      else {
-        char new_value[BUFFER_SIZE];
-        printf("Введите новое значение для создания: ");
-        scanf("%s", new_value);
-        dl_insert_after(list, dl_get_index(list, pointer), new_value[0]);
-        dl_println_with_pointer(list, pointer);
-      }
+      char new_value[BUFFER_SIZE];
+      printf("Введите новое значение для создания: ");
+      scanf("%s", new_value);
+      if (dl_is_empty(list)) {
+        list = dl_new_node(new_value[0], NULL);
+        pointer = list;
+      } else dl_insert_after(list, dl_get_index(list, pointer), new_value[0]);
+      dl_println_with_pointer(list, pointer);
     }
 
     else if (!strcmp(choice, "19") || !strcmp(choice, "p")) {
@@ -505,7 +512,6 @@ void menu_dl() {
   char choice[BUFFER_SIZE];
   bool is_ended = false;
 
-  double_list* list;
   while (!is_ended) {
     print_start_menu();
 
@@ -513,8 +519,7 @@ void menu_dl() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "new")) {
-      list = dl_new_node('0', NULL);
-      menu_dl_choose_task(list);
+      menu_dl_choose_task();
     }
 
     else if (!strcmp(choice, "2") || !strcmp(choice, "q"))
@@ -553,6 +558,6 @@ void menu_choose_list_type() {
 }
 
 int main() {
-  setlocale(LC_ALL, "");
+  setlocale(LC_ALL, "ru_RU.utf8");
   menu_choose_list_type();
 }
