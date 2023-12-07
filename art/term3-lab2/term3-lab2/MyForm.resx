@@ -124,6 +124,9 @@
   <data name="&gt;&gt;inputRows.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
+  <data name="gridView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>507, 329</value>
+  </data>
   <data name="&gt;&gt;buttonCloseApp.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
@@ -134,8 +137,8 @@
   <data name="labelCounterRowsWithoutZeros.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="labelCounterRowsWithoutZeros.Location" type="System.Drawing.Point, System.Drawing">
-    <value>620, 826</value>
+  <data name="buttonRandomizeGrid.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="labelRows.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
@@ -189,9 +192,6 @@
   <data name="buttonRandomizeGrid.Text" xml:space="preserve">
     <value>Randomize matrix</value>
   </data>
-  <data name="buttonFillMatrix.Size" type="System.Drawing.Size, System.Drawing">
-    <value>252, 82</value>
-  </data>
   <data name="&gt;&gt;buttonCloseApp.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
@@ -228,8 +228,8 @@
   <data name="gridView.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="gridView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>507, 329</value>
+  <data name="labelCounterRowsWithoutZeros.Location" type="System.Drawing.Point, System.Drawing">
+    <value>620, 826</value>
   </data>
   <data name="&gt;&gt;gridView.Parent" xml:space="preserve">
     <value>$this</value>
@@ -268,6 +268,9 @@
     <value>inputFilename</value>
   </data>
   <data name="&gt;&gt;buttonSetGridSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonFillGrid.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="buttonCloseApp.Text" xml:space="preserve">
@@ -318,8 +321,8 @@
   <data name="&gt;&gt;inputRows.Type" xml:space="preserve">
     <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="labelCounterRowsWithoutZeros.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+  <data name="&gt;&gt;inputCols.Parent" xml:space="preserve">
+    <value>$this</value>
   </data>
   <data name="&gt;&gt;labelRows.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -329,6 +332,12 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Computation of rows without zeros</value>
+  </data>
+  <data name="buttonFillGrid.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="buttonFillGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>662, 198</value>
   </data>
   <data name="&gt;&gt;buttonFillMatrix.Parent" xml:space="preserve">
     <value>$this</value>
@@ -374,6 +383,9 @@
   </data>
   <data name="buttonFillMatrix.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>6, 6, 6, 6</value>
+  </data>
+  <data name="&gt;&gt;buttonFillGrid.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -816,9 +828,6 @@
   <data name="labelCounterRowsWithoutZerosDescription.Text" xml:space="preserve">
     <value>Number of rows without zeros</value>
   </data>
-  <data name="&gt;&gt;inputCols.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
   <data name="inputCols.Size" type="System.Drawing.Size, System.Drawing">
     <value>86, 47</value>
   </data>
@@ -846,6 +855,9 @@
   <data name="&gt;&gt;labelCols.ZOrder" xml:space="preserve">
     <value>12</value>
   </data>
+  <data name="&gt;&gt;buttonSetMatrixSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;labelCounterRowsWithoutZeros.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -855,11 +867,17 @@
   <data name="labelCounterRowsWithoutZerosDescription.Location" type="System.Drawing.Point, System.Drawing">
     <value>36, 826</value>
   </data>
+  <data name="&gt;&gt;buttonSetMatrixSize.Name" xml:space="preserve">
+    <value>buttonSetMatrixSize</value>
+  </data>
   <data name="inputRows.Location" type="System.Drawing.Point, System.Drawing">
     <value>464, 37</value>
   </data>
   <data name="buttonClearGrid.Size" type="System.Drawing.Size, System.Drawing">
     <value>283, 82</value>
+  </data>
+  <data name="&gt;&gt;buttonSetMatrixSize.ZOrder" xml:space="preserve">
+    <value>11</value>
   </data>
   <data name="&gt;&gt;labelRows.ZOrder" xml:space="preserve">
     <value>13</value>
@@ -877,6 +895,9 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelRows.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;buttonFillGrid.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
   <data name="&gt;&gt;inputCols.Name" xml:space="preserve">
@@ -897,8 +918,17 @@
   <data name="labelCounterRowsWithoutZerosDescription.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="&gt;&gt;buttonFillGrid.Name" xml:space="preserve">
+    <value>buttonFillGrid</value>
+  </data>
+  <data name="&gt;&gt;buttonSetMatrixSize.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
   <data name="&gt;&gt;inputRows.Parent" xml:space="preserve">
     <value>$this</value>
+  </data>
+  <data name="labelCounterRowsWithoutZeros.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
   </data>
   <data name="buttonComputeCounterRowsWithoutZeros.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -906,8 +936,14 @@
   <data name="inputFilename.Text" xml:space="preserve">
     <value>Enter file name</value>
   </data>
-  <data name="buttonRandomizeGrid.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
+  <data name="buttonSetMatrixSize.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="buttonSetMatrixSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>662, 37</value>
+  </data>
+  <data name="buttonFillMatrix.Size" type="System.Drawing.Size, System.Drawing">
+    <value>252, 82</value>
   </data>
   <data name="&gt;&gt;buttonRandomizeGrid.ZOrder" xml:space="preserve">
     <value>1</value>

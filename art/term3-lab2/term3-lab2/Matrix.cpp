@@ -12,6 +12,24 @@ class Matrix {
  private:
   std::vector<std::vector<double>> matrix;
 
+  size_t computeRowWithoutZeros() {
+    size_t counter = 0;
+
+    for (int rowIndex = 0; rowIndex < this->matrix.size(); rowIndex++) {
+      bool rowHaveZeros = false;
+
+      for (int colIndex = 0; colIndex < this->matrix[0].size(); colIndex++) {
+        if (matrix[rowIndex][colIndex] == 0) {
+          rowHaveZeros = true;
+        }
+      }
+
+      if (!rowHaveZeros)
+        counter++;
+    }
+    return counter;
+  }
+
    void fromFile_(const std::string& filename) {
     std::ifstream inputFile(filename);
     std::string line;
@@ -20,15 +38,30 @@ class Matrix {
     if (!inputFile.is_open())
       throw std::runtime_error("Failed to open the file.");
 
+    bool is_first_row = true;
+
     while (std::getline(inputFile, line)) {
       std::vector<double> row;
       std::istringstream iss(line);
       double num;
 
-      while (iss >> num) {
-        row.push_back(num);
+      if (is_first_row) {
+          while (iss >> num) {
+            row.push_back(num);
+          }
+      } else {
+          for (size_t colIndex = 0; colIndex < this->getCols(); colIndex++) {
+            if (iss >> num)
+              row.push_back(num);
+            else {
+              row.push_back(0);
+         /*     matrix.resize(0);
+              throw std::runtime_error("Invalid matrix size");*/
+            }
+          }
       }
       matrix.push_back(row);
+      is_first_row = false;
     }
     inputFile.close();
   }
@@ -97,21 +130,5 @@ class Matrix {
 
   size_t getCols() { return this->matrix[0].size(); }
 
-  size_t rowsWithoutZeros() {
-    size_t counter = 0;
-
-    for (int rowIndex = 0; rowIndex < this->matrix.size(); rowIndex++) {
-      bool rowHaveZeros = false;
-
-      for (int colIndex = 0; colIndex < this->matrix[0].size(); colIndex++) {
-        if (matrix[rowIndex][colIndex] == 0) {
-          rowHaveZeros = true;
-        }
-      }
-
-      if (!rowHaveZeros)
-        counter++;
-    }
-    return counter;
-  }
+  size_t rowsWithoutZeros() { return this->computeRowWithoutZeros();}
 };

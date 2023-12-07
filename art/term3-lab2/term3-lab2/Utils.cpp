@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <msclr/marshal_cppstd.h>
+#include <string>
 
 class Utils {
  public:

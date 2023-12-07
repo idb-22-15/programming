@@ -37,7 +37,7 @@ ref class MyForm : public System::Windows::Forms::Form {
   System::Windows::Forms::Label ^ labelCols;
 
  private:
-  System::Windows::Forms::Button ^ buttonSetGridSize;
+  System::Windows::Forms::Button ^ buttonSetMatrixSize;
 
  private:
   System::Windows::Forms::DataGridView ^ gridView;
@@ -70,10 +70,8 @@ ref class MyForm : public System::Windows::Forms::Form {
   System::Windows::Forms::TextBox ^ inputFilename;
 
  private:
-  System::Windows::Forms::Button ^ buttonFillMatrix;
+  System::Windows::Forms::Button ^ buttonFillGrid;
 
- private:
- private:
  private:
   System::ComponentModel::Container ^ components;
 
@@ -88,7 +86,7 @@ ref class MyForm : public System::Windows::Forms::Form {
             MyForm::typeid));
     this->labelRows = (gcnew System::Windows::Forms::Label());
     this->labelCols = (gcnew System::Windows::Forms::Label());
-    this->buttonSetGridSize = (gcnew System::Windows::Forms::Button());
+    this->buttonSetMatrixSize = (gcnew System::Windows::Forms::Button());
     this->gridView = (gcnew System::Windows::Forms::DataGridView());
     this->inputRows = (gcnew System::Windows::Forms::TextBox());
     this->inputCols = (gcnew System::Windows::Forms::TextBox());
@@ -102,7 +100,7 @@ ref class MyForm : public System::Windows::Forms::Form {
         (gcnew System::Windows::Forms::Button());
     this->buttonRandomizeGrid = (gcnew System::Windows::Forms::Button());
     this->inputFilename = (gcnew System::Windows::Forms::TextBox());
-    this->buttonFillMatrix = (gcnew System::Windows::Forms::Button());
+    this->buttonFillGrid = (gcnew System::Windows::Forms::Button());
     (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(
          this->gridView))
         ->BeginInit();
@@ -118,14 +116,15 @@ ref class MyForm : public System::Windows::Forms::Form {
     resources->ApplyResources(this->labelCols, L"labelCols");
     this->labelCols->Name = L"labelCols";
     //
-    // buttonSetGridSize
+    // buttonSetMatrixSize
     //
-    resources->ApplyResources(this->buttonSetGridSize, L"buttonSetGridSize");
-    this->buttonSetGridSize->Cursor = System::Windows::Forms::Cursors::Hand;
-    this->buttonSetGridSize->Name = L"buttonSetGridSize";
-    this->buttonSetGridSize->UseVisualStyleBackColor = true;
-    this->buttonSetGridSize->Click +=
-        gcnew System::EventHandler(this, &MyForm::SetGridSize);
+    resources->ApplyResources(this->buttonSetMatrixSize,
+                              L"buttonSetMatrixSize");
+    this->buttonSetMatrixSize->Cursor = System::Windows::Forms::Cursors::Hand;
+    this->buttonSetMatrixSize->Name = L"buttonSetMatrixSize";
+    this->buttonSetMatrixSize->UseVisualStyleBackColor = true;
+    this->buttonSetMatrixSize->Click +=
+        gcnew System::EventHandler(this, &MyForm::buttonSetMatrixSize_Click);
     //
     // gridView
     //
@@ -140,11 +139,16 @@ ref class MyForm : public System::Windows::Forms::Form {
         System::Windows::Forms::DataGridViewHeaderBorderStyle::Single;
     this->gridView->ColumnHeadersHeightSizeMode = System::Windows::Forms::
         DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+    this->gridView->ColumnHeadersVisible = false;
+    this->gridView->MultiSelect = false;
     this->gridView->Name = L"gridView";
     this->gridView->RowHeadersVisible = false;
     this->gridView->RowHeadersWidthSizeMode = System::Windows::Forms::
         DataGridViewRowHeadersWidthSizeMode::AutoSizeToAllHeaders;
     this->gridView->RowTemplate->Height = 28;
+    this->gridView->ShowCellErrors = false;
+    this->gridView->ShowCellToolTips = false;
+    this->gridView->ShowRowErrors = false;
     this->gridView->CellEndEdit +=
         gcnew System::Windows::Forms::DataGridViewCellEventHandler(
             this, &MyForm::gridView_CellEndEdit);
@@ -223,14 +227,14 @@ ref class MyForm : public System::Windows::Forms::Form {
     resources->ApplyResources(this->inputFilename, L"inputFilename");
     this->inputFilename->Name = L"inputFilename";
     //
-    // buttonFillMatrix
+    // buttonFillGrid
     //
-    resources->ApplyResources(this->buttonFillMatrix, L"buttonFillMatrix");
-    this->buttonFillMatrix->Cursor = System::Windows::Forms::Cursors::Hand;
-    this->buttonFillMatrix->Name = L"buttonFillMatrix";
-    this->buttonFillMatrix->UseVisualStyleBackColor = true;
-    this->buttonFillMatrix->Click +=
-        gcnew System::EventHandler(this, &MyForm::buttonFillMatrix_Click);
+    resources->ApplyResources(this->buttonFillGrid, L"buttonFillGrid");
+    this->buttonFillGrid->Cursor = System::Windows::Forms::Cursors::Hand;
+    this->buttonFillGrid->Name = L"buttonFillGrid";
+    this->buttonFillGrid->UseVisualStyleBackColor = true;
+    this->buttonFillGrid->Click +=
+        gcnew System::EventHandler(this, &MyForm::buttonFillGrid_Click);
     //
     // MyForm
     //
@@ -240,7 +244,7 @@ ref class MyForm : public System::Windows::Forms::Form {
     this->ControlBox = false;
     this->Controls->Add(this->inputFilename);
     this->Controls->Add(this->buttonRandomizeGrid);
-    this->Controls->Add(this->buttonFillMatrix);
+    this->Controls->Add(this->buttonFillGrid);
     this->Controls->Add(this->buttonComputeCounterRowsWithoutZeros);
     this->Controls->Add(this->buttonCloseApp);
     this->Controls->Add(this->labelCounterRowsWithoutZeros);
@@ -249,7 +253,7 @@ ref class MyForm : public System::Windows::Forms::Form {
     this->Controls->Add(this->inputRows);
     this->Controls->Add(this->gridView);
     this->Controls->Add(this->buttonClearGrid);
-    this->Controls->Add(this->buttonSetGridSize);
+    this->Controls->Add(this->buttonSetMatrixSize);
     this->Controls->Add(this->labelCols);
     this->Controls->Add(this->labelRows);
     this->Name = L"MyForm";
@@ -273,6 +277,32 @@ ref class MyForm : public System::Windows::Forms::Form {
   }
 
  private:
+  System::Void UpdateLabel(Label ^ label, System::String ^ text) {
+    label->Text = text;
+  }
+
+ private:
+  System::Void UpdateLabel(Label ^ label, size_t number) {
+    label->Text = System::Convert::ToString(number);
+  }
+
+ private:
+  System ::Void UpdateInput(TextBox ^ input, size_t number) {
+    input->Text = System::Convert::ToString(number);
+  }
+
+ private:
+  System::Void InvalidateLabelCounterRowsWithoutZeros() {
+    this->UpdateLabel(this->labelCounterRowsWithoutZeros, "-");
+  }
+
+ private:
+  System::Void UpdateLabelCounterRowsWithoutZeros() {
+    this->UpdateLabel(this->labelCounterRowsWithoutZeros,
+                      this->matrix->rowsWithoutZeros());
+  }
+
+ private:
   void ColorizeGridRowsWithoutZeros() {
     this->ResetGridViewCellsColor();
 
@@ -293,8 +323,7 @@ ref class MyForm : public System::Windows::Forms::Form {
   }
 
  private:
-  System::Void ColorizeGridViewRow(size_t row,
-                                   System::Drawing::Color color) {
+  System::Void ColorizeGridViewRow(size_t row, System::Drawing::Color color) {
     for (size_t colIndex = 0; colIndex < this->matrix->getCols(); colIndex++) {
       this->gridView->Rows[row]->Cells[colIndex]->Style->BackColor = color;
     }
@@ -311,7 +340,8 @@ ref class MyForm : public System::Windows::Forms::Form {
   System::Boolean IsMatrixExist() { return this->matrix != nullptr; }
 
  private:
-  System::Void SetGridSize(System::Object ^ sender, System::EventArgs ^ e) {
+  System::Void buttonSetMatrixSize_Click(System::Object ^ sender,
+                                         System::EventArgs ^ e) {
     if (this->IsMatrixExist() && this->matrix->isNotEmpty()) {
       this->ShowError("Matrix is not empty, clear matrix to set new size");
       return;
@@ -324,8 +354,6 @@ ref class MyForm : public System::Windows::Forms::Form {
       rows = this->ParseSize(inputRows->Text);
     } catch (...) {
       this->ShowError("The number of rows is entered incorrectly");
-      rows = 1;
-      this->inputRows->Text = System::Convert::ToString(rows);
       return;
     }
 
@@ -333,22 +361,17 @@ ref class MyForm : public System::Windows::Forms::Form {
       cols = this->ParseSize(inputCols->Text);
     } catch (...) {
       this->ShowError("The number of columns is entered incorrectly");
-      cols = 1;
-      this->inputCols->Text = System::Convert::ToString(cols);
       return;
     }
 
-    delete this->matrix;
+    if (this->IsMatrixExist())
+      delete this->matrix;
+
     matrix = new Matrix(rows, cols);
+    this->UpdateInput(this->inputRows, rows);
+    this->UpdateInput(this->inputCols, cols);
     this->ShowGridView();
     this->EnableButtons();
-  }
-
- private:
-  System::Void EnableButtons() {
-    this->buttonClearGrid->Enabled = true;
-    this->buttonRandomizeGrid->Enabled = true;
-    this->buttonComputeCounterRowsWithoutZeros->Enabled = true;
   }
 
  private:
@@ -366,11 +389,6 @@ ref class MyForm : public System::Windows::Forms::Form {
   }
 
  private:
-  System::Void UpdateLabel(Label ^ label, System::String ^ text) {
-    label->Text = text;
-  }
-
- private:
   System::Void ShowGridView() {
     this->gridView->RowCount = this->matrix->getRows();
     this->gridView->ColumnCount = this->matrix->getCols();
@@ -380,6 +398,13 @@ ref class MyForm : public System::Windows::Forms::Form {
         this->gridView->Rows[i]->Cells[j]->Value = matrix->getCellValue(i, j);
       }
     }
+  }
+
+ private:
+  System::Void EnableButtons() {
+    this->buttonClearGrid->Enabled = true;
+    this->buttonRandomizeGrid->Enabled = true;
+    this->buttonComputeCounterRowsWithoutZeros->Enabled = true;
   }
 
  private:
@@ -397,89 +422,94 @@ ref class MyForm : public System::Windows::Forms::Form {
                                                               sender,
                                                           System::EventArgs ^
                                                               e) {
-    if (!this->IsMatrixExist()) {
-      this->ShowError("Matrix does not exist");
-      return;
-    }
+    this->UpdateAppViewState();
+  }
 
+ private:
+  System::Void UpdateAppViewState() {
     this->ColorizeGridRowsWithoutZeros();
-    this->UpdateLabel(
-        this->labelCounterRowsWithoutZeros,
-        System::Convert::ToString(this->matrix->rowsWithoutZeros()));
+    this->UpdateLabelCounterRowsWithoutZeros();
+  }
+
+ private:
+  System::Void ResetAppViewState() {
+    this->InvalidateLabelCounterRowsWithoutZeros();
+    this->ResetGridViewCellsColor();
+  }
+
+ private:
+  System::Void UpdateGridViewCellValue(size_t row, size_t col, double value) {
+    this->gridView->Rows[row]->Cells[col]->Value =
+        System::Convert::ToString(value);
   }
 
  private:
   System::Void gridView_CellEndEdit(
       System::Object ^ sender,
       System::Windows::Forms::DataGridViewCellEventArgs ^ e) {
-    this->InvalidateLabelCounterRowsWithoutZeros();
-    this->ResetGridViewCellsColor();
+    this->ResetAppViewState();
 
     DataGridViewCell ^ cell = this->gridView->CurrentCell;
+    size_t rowIndex = cell->RowIndex;
+    size_t colIndex = cell->ColumnIndex;
 
     try {
-      System::Double value = System::Convert::ToDouble(cell->Value);
-      this->matrix->setCellValue(cell->RowIndex, cell->ColumnIndex, value);
+      double value = System::Convert::ToDouble(cell->Value);
+      this->matrix->setCellValue(rowIndex, colIndex, value);
     } catch (...) {
-      this->matrix->setCellValue(cell->RowIndex, cell->ColumnIndex, 0);
+      this->matrix->setCellValue(rowIndex, colIndex, 0);
     }
-
-    this->gridView->Rows[cell->RowIndex]->Cells[cell->ColumnIndex]->Value =
-        System::Convert::ToString(
-            this->matrix->getCellValue(cell->RowIndex, cell->ColumnIndex));
-  }
-
- private:
-  System::Void InvalidateLabelCounterRowsWithoutZeros() {
-    this->UpdateLabel(this->labelCounterRowsWithoutZeros, "-");
+    this->UpdateGridViewCellValue(
+        rowIndex, colIndex, this->matrix->getCellValue(rowIndex, colIndex));
   }
 
  private:
   System::Void buttonRandomizeGrid_Click(System::Object ^ sender,
                                          System::EventArgs ^ e) {
-    if (!this->IsMatrixExist()) {
-      MessageBox::Show("Matrix does not exist");
+    if (this->IsMatrixExist() && this->matrix->isNotEmpty()) {
+      this->ShowError("Matrix is not empty, clear matrix randomize");
       return;
     }
-
-    this->InvalidateLabelCounterRowsWithoutZeros();
-    this->ResetGridViewCellsColor();
-
+    this->ResetAppViewState();
     this->matrix->randomize();
     this->ShowGridView();
   }
 
  private:
+  System::Void buttonFillGrid_Click(System::Object ^ sender,
+                                    System::EventArgs ^ e) {
+    if (this->IsMatrixExist() && this->matrix->isNotEmpty()) {
+      this->ShowError("Matrix is not empty, clear matrix to set new size");
+      return;
+    }
+
+    try {
+      Matrix* newMatrix = Matrix::fromFile(
+          Utils::ConvertSystemStringToStd(inputFilename->Text));
+
+      if (this->IsMatrixExist())
+        delete this->matrix;
+      this->matrix = newMatrix;
+
+      this->UpdateInput(this->inputRows, this->matrix->getRows());
+      this->UpdateInput(this->inputCols, this->matrix->getCols());
+      this->ShowGridView();
+      this->EnableButtons();
+    } catch (const std::exception& e) {
+      this->ShowError(gcnew System::String(e.what()));
+    }
+  }
+
+ private:
   System::Void buttonCloseApp_MouseHover(System::Object ^ sender,
                                          System::EventArgs ^ e) {
-    Button ^ button = safe_cast<Button ^>(sender);
-    button->BackColor = Color::MistyRose;
+    this->buttonCloseApp->BackColor = Color::MistyRose;
   }
 
  private:
   System::Void buttonCloseApp_MouseLeave(System::Object ^ sender,
                                          System::EventArgs ^ e) {
-    Button ^ button = safe_cast<Button ^>(sender);
-    button->BackColor = Color::White;
-  }
-
- private:
-  System::Void buttonFillMatrix_Click(System::Object ^ sender,
-                                      System::EventArgs ^ e) {
-      if (this->IsMatrixExist() && this->matrix->isNotEmpty()) {
-        this->ShowError("Matrix is not empty, clear matrix to set new size");
-        return;
-      }
-    try {
-      
-      delete matrix;
-      this->matrix = Matrix::fromFile(
-          Utils::ConvertSystemStringToStd(inputFilename->Text));
-      this->ShowGridView();
-      this->EnableButtons();
-    } catch (...) {
-      this->ShowError("Error when opening file");
-    }
+    this->buttonCloseApp->BackColor = Color::White;
   }
 };
 
