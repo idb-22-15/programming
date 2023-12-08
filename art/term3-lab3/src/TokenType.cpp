@@ -9,31 +9,32 @@ enum struct TokenType {
   rsquirly,   // }
   lsquare,    // [
   rsquare,    // ]
-  slash,      // /
   linecomm,   // //
-  longcomm,   // /* */ 
+  longcomm,   // /* */
+  slash,      // /
   asteriks,   // *
   persent,    // %
+  inc,        // ++
   plus,       // +
+  dec,        // --
+  arrow,      // ->
   minus,      // -
   eql,        // =
   neq,        // !=
-  lss,        // <
   leq,        // <=
-  gtr,        // >
+  lss,        // <
   geq,        // >=
+  gtr,        // >
   colon,      // :
   semicolon,  // ;
   comma,      // ,
-  ampersand,  // &
-  arrow,      // ->
-  andsym,     // &&
-  orsym,      // ||
-  notsym,     // !
-  logicand,   // &
-  logicor,    // |
-  logicnot,   // ~
-  logicxor,   // ^
+  logicand,   // &&
+  logicor,    // ||
+  logicnot,   // !
+  bitcand,    // &
+  bitcor,     // |
+  bitnot,     // ~
+  bitxor,     // ^
 
   inttok,     // int
   floattok,   // float
