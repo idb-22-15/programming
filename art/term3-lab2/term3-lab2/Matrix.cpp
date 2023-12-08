@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -6,7 +6,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
 
 class Matrix {
  private:
@@ -30,7 +29,7 @@ class Matrix {
     return counter;
   }
 
-   void fromFile_(const std::string& filename) {
+  void fromFile_(const std::string& filename) {
     std::ifstream inputFile(filename);
     std::string line;
 
@@ -46,32 +45,32 @@ class Matrix {
       double num;
 
       if (is_first_row) {
-          while (iss >> num) {
-            row.push_back(num);
-          }
+        while (iss >> num) {
+          row.push_back(num);
+        }
       } else {
-          for (size_t colIndex = 0; colIndex < this->getCols(); colIndex++) {
-            if (iss >> num)
-              row.push_back(num);
-            else {
-              row.push_back(0);
-         /*     matrix.resize(0);
-              throw std::runtime_error("Invalid matrix size");*/
-            }
+        for (size_t colIndex = 0; colIndex < this->getCols(); colIndex++) {
+          if (iss >> num)
+            row.push_back(num);
+          else {
+            row.push_back(0);
+            /*     matrix.resize(0);
+                 throw std::runtime_error("Invalid matrix size");*/
           }
+        }
       }
       matrix.push_back(row);
       is_first_row = false;
     }
     inputFile.close();
   }
- public:
-    static Matrix* fromFile(const std::string& filename) {
-      auto m = new Matrix();
-      m->fromFile_(filename);
-      return m;
-    }
 
+ public:
+  static Matrix* fromFile(const std::string& filename) {
+    auto m = new Matrix();
+    m->fromFile_(filename);
+    return m;
+  }
 
   Matrix(size_t rows = 1, size_t cols = 1) {
     this->matrix.resize(rows);
@@ -130,5 +129,5 @@ class Matrix {
 
   size_t getCols() { return this->matrix[0].size(); }
 
-  size_t rowsWithoutZeros() { return this->computeRowWithoutZeros();}
+  size_t rowsWithoutZeros() { return this->computeRowWithoutZeros(); }
 };
