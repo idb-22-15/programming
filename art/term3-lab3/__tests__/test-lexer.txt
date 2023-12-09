@@ -1,5 +1,6 @@
 999.99
 "some string"
+'a'
 _variable_name
 
 (

@@ -1,5 +1,8 @@
+#pragma once
+
 enum struct TokenType {
   number,
+  charlit,
   string,
   ident,
 

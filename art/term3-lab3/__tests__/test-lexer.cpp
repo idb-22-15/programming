@@ -4,14 +4,13 @@
 #include "../src/Lexer.cpp"
 
 void println_token_info(Token tok) {
-  if (tok.type_printable.length() == 1)
-    std::cout << "type: " << tok.type_printable
-              << "\t\t\t literal: " << tok.literal
-              << "\t position: " << tok.position.start << std::endl;
+  if (tok.type_printable.length() > 9)
+    std::cout << "type: " << tok.type_printable << "\t literal: " << tok.literal
+              << "\t\t position: " << tok.position.start << std::endl;
   else
     std::cout << "type: " << tok.type_printable
               << "\t\t literal: " << tok.literal
-              << "\t position: " << tok.position.start << std::endl;
+              << "\t\t position: " << tok.position.start << std::endl;
 }
 
 void print_tokens(std::vector<Token> tokens) {
@@ -38,12 +37,12 @@ int main() {
     std::string test_string = buffer.str();
     // std::cout << test_string << std::endl;
     lexer.init(test_string);
-    print_tokens(lexer.tokenize());
+    print_tokens_by_next(lexer);
   } else {
     std::cerr << "Error opening the file" << std::endl;
   }
 
-  // lexer.init("! & | ~ ^ int a = 5.64; float b = 4; class Foo { Foo(int a,
-  // bool b): aa(a), bb(b)}"); std::vector<Token> tokens = lexer.tokenize();
-  // print_tokens(tokens);
+  lexer.init("int a = ");
+  std::vector<Token> tokens = lexer.tokenize();
+  print_tokens(tokens);
 }

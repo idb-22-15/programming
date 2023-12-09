@@ -1,3 +1,4 @@
+#pragma once
 #include <experimental/optional>
 #include <regex>
 #include <string>
@@ -19,7 +20,6 @@ class Lexer {
       this->cursor += results[0].length();
       return results[0];
     };
-
     return std::experimental::nullopt;
   }
 
@@ -170,6 +170,6 @@ class Lexer {
     std::string illegal_literal = "";
     illegal_literal += this->at();
     return Token(TokenType::illegal, illegal_literal,
-                 Position(this->cursor, this->cursor));
+                 Position(this->move_cursor(), this->cursor));
   }
 };

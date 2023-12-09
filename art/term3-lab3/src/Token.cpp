@@ -1,9 +1,8 @@
+#pragma once
 #include <map>
 #include <regex>
 #include <string>
-
 #include "TokenType.cpp"
-// #pragma once
 
 struct Position {
   size_t start;
@@ -39,42 +38,43 @@ const std::map<std::string, TokenType> Token::reserved_idents{
     {"const", TokenType::consttok},   {"auto", TokenType::autotok}};
 
 const std::map<TokenType, std::string> Token::printable_literals{
-    {TokenType::number, "number"},
-    {TokenType::string, "string"},
+    {TokenType::number, "number lit"},
+    {TokenType::charlit, "char lit"},
+    {TokenType::string, "string lit"},
     {TokenType::ident, "ident"},
 
-    {TokenType::lparen, "("},
-    {TokenType::rparen, ")"},
-    {TokenType::lsquirly, "{"},
-    {TokenType::rsquirly, "}"},
-    {TokenType::lsquare, "["},
-    {TokenType::rsquare, "]"},
+    {TokenType::lparen, "lparen"},
+    {TokenType::rparen, "rparen"},
+    {TokenType::lsquirly, "lsquirly"},
+    {TokenType::rsquirly, "rsquirly"},
+    {TokenType::lsquare, "lsqare"},
+    {TokenType::rsquare, "rsquare"},
     {TokenType::linecomm, "line comm"},
     {TokenType::longcomm, "long comm"},
-    {TokenType::slash, "/"},
-    {TokenType::asteriks, "*"},
-    {TokenType::persent, "%"},
-    {TokenType::inc, "++"},
-    {TokenType::plus, "+"},
-    {TokenType::dec, "--"},
-    {TokenType::arrow, "->"},
-    {TokenType::minus, "-"},
-    {TokenType::eql, "="},
-    {TokenType::neq, "!="},
-    {TokenType::leq, "<="},
-    {TokenType::lss, "<"},
-    {TokenType::geq, ">="},
-    {TokenType::gtr, ">"},
-    {TokenType::colon, ":"},
-    {TokenType::semicolon, ";"},
-    {TokenType::comma, ","},
-    {TokenType::logicand, "&&"},
-    {TokenType::logicor, "||"},
-    {TokenType::logicnot, "!"},
-    {TokenType::bitcand, "&"},
-    {TokenType::bitcor, "|"},
-    {TokenType::bitnot, "~"},
-    {TokenType::bitxor, "^"},
+    {TokenType::slash, "slash"},
+    {TokenType::asteriks, "asteriks"},
+    {TokenType::persent, "persent"},
+    {TokenType::inc, "inc"},
+    {TokenType::plus, "pluc"},
+    {TokenType::dec, "dec"},
+    {TokenType::arrow, "arrow"},
+    {TokenType::minus, "minus"},
+    {TokenType::eql, "eql"},
+    {TokenType::neq, "neq"},
+    {TokenType::leq, "leq"},
+    {TokenType::lss, "lss"},
+    {TokenType::geq, "geq"},
+    {TokenType::gtr, "gtr"},
+    {TokenType::colon, "colon"},
+    {TokenType::semicolon, "semicolon"},
+    {TokenType::comma, "comma"},
+    {TokenType::logicand, "logicand"},
+    {TokenType::logicor, "logicor"},
+    {TokenType::logicnot, "logicnot"},
+    {TokenType::bitcand, "bitand"},
+    {TokenType::bitcor, "bitor"},
+    {TokenType::bitnot, "bitnot"},
+    {TokenType::bitxor, "bitxor"},
 
     {TokenType::inttok, "int"},
     {TokenType::floattok, "float"},
@@ -96,6 +96,7 @@ const std::map<TokenType, std::string> Token::printable_literals{
 
 const std::map<TokenType, std::regex> Token::regex_table{
     {TokenType::number, std::regex("^-?\\d+(\\.\\d+)?")},
+    {TokenType::charlit, std::regex("^'.'")},
     {TokenType::string, std::regex("^\"(\\\\.|[^\\\\\"])*\"")},
     {TokenType::ident, std::regex("^[a-zA-Z_][a-zA-Z0-9_]*")},
 
