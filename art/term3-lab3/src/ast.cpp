@@ -90,28 +90,3 @@ class VarDeclaration : public Statement {
                  std::experimental::optional<Expr> value)
       : is_const(is_const), identifier(identifier), value(value) {}
 };
-
-class UnexpectedToken : public std::exception {
- private:
-  std::experimental::optional<TokenType> expected;
-  Token received;
-  std::string message;
-
- public:
-  UnexpectedToken(Token received) : received(received) {
-    this->message = "Unexpected token; ";
-    this->message += "received type: " + this->received.type_printable +
-                     ", literal: " + this->received.literal + ", start: " +
-                     std::to_string(this->received.position.start);
-  }
-
-  UnexpectedToken(TokenType expected, Token received) : received(received) {
-    this->expected = std::experimental::make_optional(expected);
-    this->message = "Expected type: " + Token::printable_literals.at(expected) +
-                    "; received type: " + this->received.type_printable +
-                    ", literal: " + this->received.literal +
-                    ", start: " + std::to_string(this->received.position.start);
-  }
-
-  virtual const char* what() const throw() { return this->message.c_str(); }
-};

@@ -12,8 +12,28 @@ class Lexer {
   size_t line = 1;
   size_t col = 1;
 
-  std::experimental::optional<std::string> _match(std::string str,
-                                                  std::regex regex) {
+ public:
+  void init(std::string input) {
+    this->input = input;
+    this->cursor = 0;
+  }
+
+  std::vector<Token> tokenize() {
+    std::vector<Token> tokens;
+
+    Token tok = this->next();
+    tokens.push_back(tok);
+    while (tok.type != TokenType::eof) {
+      tok = this->next();
+      tokens.push_back(tok);
+    }
+
+    return tokens;
+  }
+
+ private:
+  std::experimental::optional<std::string> match(std::string str,
+                                                 std::regex regex) {
     std::smatch results;
 
     if (std::regex_search(str, results, regex)) {
@@ -53,30 +73,12 @@ class Lexer {
     return prev;
   }
 
- public:
-  void init(std::string input) {
-    this->input = input;
-    this->cursor = 0;
-  }
-
-  std::vector<Token> tokenize() {
-    std::vector<Token> tokens;
-
-    Token tok = this->next();
-    tokens.push_back(tok);
-    while (tok.type != TokenType::eof) {
-      tok = this->next();
-      tokens.push_back(tok);
-    }
-
-    return tokens;
-  }
-
   Token next() {
     this->skip_whitespace();
 
     if (!this->has_more_tokens())
-      return Token(TokenType::eof, "\0", Position(this->cursor, this->cursor));
+      return Token(TokenType::eof, "\0",
+                   Position(this->cursor, this->cursor, this->line, this->col));
 
     // if (this->at() == '-' && this->peek() == '>') {
     //   return Token(TokenType::arrow, "->",
@@ -121,6 +123,8 @@ class Lexer {
     if (this->at() == '/' && this->peek() == '/') {
       this->move_cursor(2);
       size_t start_comment = this->cursor;
+      size_t line = this->line;
+      size_t col = this->col;
       while (this->at() != '\n' && this->has_more_tokens()) {
         this->move_cursor();
       }
@@ -129,31 +133,37 @@ class Lexer {
       return Token(TokenType::linecomm,
                    this->input.substr(start_comment,
                                       this->cursor - start_comment - shift),
-                   Position(start_comment, this->cursor));
+                   Position(start_comment, this->cursor, line, col));
     } else if (this->at() == '/' && this->peek() == '*') {
       this->move_cursor(2);
       size_t start_comment = this->cursor;
+      size_t line = this->line;
+      size_t col = this->col;
       while (!(this->at() == '*' && this->peek() == '/')) {
         this->move_cursor();
         if (!this->has_more_tokens())
           return Token(TokenType::illegal, "/*",
-                       Position(start_comment, start_comment + 2));
+                       Position(start_comment, start_comment + 2, line, col));
       }
-      this->move_cursor(1);
+      this->move_cursor(2);
       return Token(
           TokenType::longcomm,
           this->input.substr(start_comment, this->cursor - start_comment - 2),
-          Position(start_comment, this->cursor - 2));
+          Position(start_comment, this->cursor - 2, line, col));
     } else if (this->at() == '/') {
+      size_t line = this->line;
+      size_t col = this->col;
       return Token(TokenType::slash, "/",
-                   Position(this->move_cursor(), cursor));
+                   Position(this->move_cursor(), cursor, line, col));
     }
 
     for (auto pair : Token::regex_table) {
       TokenType token_type = pair.first;
       std::regex regex = pair.second;
       size_t start_cursor = this->cursor;
-      auto result = this->_match(this->input.substr(this->cursor), regex);
+      size_t line = this->line;
+      size_t col = this->col;
+      auto result = this->match(this->input.substr(this->cursor), regex);
       if (!result)
         continue;
 
@@ -161,15 +171,17 @@ class Lexer {
         auto it = Token::reserved_idents.find(result.value());
         if (it != Token::reserved_idents.end())
           return Token(it->second, result.value(),
-                       Position(start_cursor, this->cursor));
+                       Position(start_cursor, this->cursor, line, col));
       }
       return Token(token_type, result.value(),
-                   Position(start_cursor, this->cursor));
+                   Position(start_cursor, this->cursor, line, col));
     }
 
     std::string illegal_literal = "";
     illegal_literal += this->at();
+    size_t line = this->line;
+    size_t col = this->col;
     return Token(TokenType::illegal, illegal_literal,
-                 Position(this->move_cursor(), this->cursor));
+                 Position(this->move_cursor(), this->cursor, line, col));
   }
 };

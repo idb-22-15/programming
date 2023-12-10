@@ -4,7 +4,37 @@
 #include <map>
 #include <string>
 #include "Lexer.cpp"
-#include "node-types.cpp"
+#include "ast.cpp"
+
+class UnexpectedToken : public std::exception {
+ public:
+  Token received;
+
+ private:
+  std::experimental::optional<TokenType> expected;
+  std::string message;
+
+ public:
+  UnexpectedToken(Token received, std::string message = "")
+      : received(received) {
+    this->message = "Unexpected token; ";
+    if (message != "")
+      this->message += message + "; ";
+    this->message += "received type: " + this->received.type_printable +
+                     ", literal: " + this->received.literal + ", start: " +
+                     std::to_string(this->received.position.start);
+  }
+
+  UnexpectedToken(TokenType expected, Token received) : received(received) {
+    this->expected = std::experimental::make_optional(expected);
+    this->message = "Expected type: " + Token::printable_literals.at(expected) +
+                    "; received type: " + this->received.type_printable +
+                    ", literal: " + this->received.literal +
+                    ", start: " + std::to_string(this->received.position.start);
+  }
+
+  virtual const char* what() const throw() { return this->message.c_str(); }
+};
 
 class Parser {
  private:
@@ -48,6 +78,7 @@ class Parser {
   // }
 
   Statement parse_statement() {
+    return this->parse_function_declaration();
     switch (this->at().type) {
       case TokenType::consttok:
       case TokenType::inttok:
@@ -56,13 +87,23 @@ class Parser {
       case TokenType::chartok:
       case TokenType::booltok:
       case TokenType::autotok:
-        return this->parse_var_declaration();
+        return this->parse_function_declaration();
       default:
         return this->parse_expr();
         // throw UnexpectedToken(this->at());
     };
 
     // this->parse_expr();
+  }
+
+  Statement parse_function_declaration() {
+    this->parse_typed_ident();
+    this->parse_args();
+    this->expect(TokenType::lsquirly);
+
+    this->expect(TokenType::rsquirly);
+    this->expect(TokenType::semicolon);
+    return Statement();
   }
 
   Statement parse_var_declaration() {
@@ -94,11 +135,11 @@ class Parser {
             return VarDeclaration(is_const, ident, value);
           }
           default:
-            throw UnexpectedToken(this->at());
+            throw UnexpectedToken(this->at(), "Expected type semicolon or eql");
         }
       }
       default:
-        throw UnexpectedToken(this->at());
+        throw UnexpectedToken(this->at(), "Parse var declaration");
     };
   }
 
@@ -106,9 +147,9 @@ class Parser {
 
   Expr parse_additive_expr() {
     Expr left = this->parse_multiplicative_expr();
-    TokenType op = this->at().type;
-    while (op == TokenType::plus || op == TokenType::minus) {
-      op = this->eat().type;
+    while (this->at().type == TokenType::plus ||
+           this->at().type == TokenType::minus) {
+      TokenType op = this->eat().type;
       Expr right = this->parse_multiplicative_expr();
       left = BinaryExpr(left, right, op);
     }
@@ -117,10 +158,10 @@ class Parser {
 
   Expr parse_multiplicative_expr() {
     Expr left = this->parse_primary_expr();
-    TokenType op = this->at().type;
-    while (op == TokenType::asteriks || op == TokenType::slash ||
-           op == TokenType::persent) {
-      op = this->eat().type;
+    while (this->at().type == TokenType::asteriks ||
+           this->at().type == TokenType::slash ||
+           this->at().type == TokenType::persent) {
+      TokenType op = this->eat().type;
       Expr right = this->parse_primary_expr();
       left = BinaryExpr(left, right, op);
     }
@@ -132,9 +173,12 @@ class Parser {
       case TokenType::number:
         return NumericLiteral(std::stod(this->eat().literal));
       case TokenType::charlit:
-        return CharLiteral(std::stoi(this->eat().literal));
-      case TokenType::string:
-        return StringLiteral(this->eat().literal);
+        return CharLiteral(this->eat().literal.at(1));
+      case TokenType::string: {
+        std::string str = this->eat().literal;
+        str = str.substr(1, str.length() - 2);
+        return StringLiteral(str);
+      }
       case TokenType::lparen: {
         this->eat();
         Expr value = this->parse_expr();
@@ -142,16 +186,55 @@ class Parser {
         return value;
       }
       default:
-        throw UnexpectedToken(this->at());
+        throw UnexpectedToken(this->at(), "Parse primary expr");
     }
   }
 
   void parse_constructor() { expect(TokenType::ident); }
 
   void parse_args() {
-    expect(TokenType::lparen);
+    this->expect(TokenType::lparen);
+    if (this->at().type != TokenType::rparen)
+      this->parse_args_list();
+    this->expect(TokenType::rparen);
+  }
 
-    while (this->at().type != TokenType::rparen) {
+  void parse_typed_ident() {
+    bool is_unsigned = false;
+    if (this->at().type == TokenType::consttok) {
+      this->eat();
+    }
+
+    if (this->at().type == TokenType::unsignedtok) {
+      this->eat();
+      is_unsigned = true;
+    }
+
+    switch (this->at().type) {
+      case TokenType::voidtok:
+      case TokenType::inttok:
+      case TokenType::chartok:
+      case TokenType::floattok:
+      case TokenType::doubletok:
+      case TokenType::booltok: {
+        if (is_unsigned && !(this->at().type == TokenType::inttok ||
+                             this->at().type == TokenType::chartok ||
+                             this->at().type == TokenType::booltok))
+          throw UnexpectedToken(this->at(), "Type cannot be unsigned");
+        this->eat();
+        this->expect(TokenType::ident);
+        return;
+      }
+      default:
+        throw UnexpectedToken(this->at(), "Parse typed ident");
+    }
+  }
+
+  void parse_args_list() {
+    this->parse_typed_ident();
+    while (this->at().type == TokenType::comma) {
+      this->eat();
+      this->parse_typed_ident();
     }
   }
 };

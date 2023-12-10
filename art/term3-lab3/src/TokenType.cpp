@@ -39,20 +39,22 @@ enum struct TokenType {
   bitnot,     // ~
   bitxor,     // ^
 
-  inttok,     // int
-  floattok,   // float
-  doubletok,  // double
-  chartok,    // char
-  booltok,    // bool
-  classtok,   // class
-  structtok,  // struct
-  iftok,      // if
-  elsetok,    // else
-  dotok,      // do
-  whiletok,   // while
-  fortok,     // for
-  consttok,   // const
-  autotok,    // auto
+  voidtok,
+  inttok,       // int
+  floattok,     // float
+  doubletok,    // double
+  chartok,      // char
+  booltok,      // bool
+  unsignedtok,  // unsigned
+  classtok,     // class
+  structtok,    // struct
+  iftok,        // if
+  elsetok,      // else
+  dotok,        // do
+  whiletok,     // while
+  fortok,       // for
+  consttok,     // const
+  autotok,      // auto
 
   eof,
   illegal

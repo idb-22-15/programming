@@ -7,7 +7,10 @@
 struct Position {
   size_t start;
   size_t end;
-  Position(size_t start, size_t end) : start(start), end(end) {}
+  size_t line;
+  size_t col;
+  Position(size_t start, size_t end, size_t line, size_t col)
+      : start(start), end(end), line(line), col(col) {}
 };
 
 struct Token {
@@ -29,13 +32,14 @@ struct Token {
 };
 
 const std::map<std::string, TokenType> Token::reserved_idents{
-    {"int", TokenType::inttok},       {"float", TokenType::floattok},
-    {"double", TokenType::doubletok}, {"char", TokenType::chartok},
-    {"bool", TokenType::booltok},     {"class", TokenType::classtok},
-    {"struct", TokenType::structtok}, {"if", TokenType::iftok},
-    {"else", TokenType::elsetok},     {"do", TokenType::dotok},
-    {"while", TokenType::whiletok},   {"for", TokenType::fortok},
-    {"const", TokenType::consttok},   {"auto", TokenType::autotok}};
+    {"void", TokenType::voidtok},         {"int", TokenType::inttok},
+    {"float", TokenType::floattok},       {"double", TokenType::doubletok},
+    {"char", TokenType::chartok},         {"bool", TokenType::booltok},
+    {"unsigned", TokenType::unsignedtok}, {"class", TokenType::classtok},
+    {"struct", TokenType::structtok},     {"if", TokenType::iftok},
+    {"else", TokenType::elsetok},         {"do", TokenType::dotok},
+    {"while", TokenType::whiletok},       {"for", TokenType::fortok},
+    {"const", TokenType::consttok},       {"auto", TokenType::autotok}};
 
 const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::number, "number lit"},
@@ -55,7 +59,7 @@ const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::asteriks, "asteriks"},
     {TokenType::persent, "persent"},
     {TokenType::inc, "inc"},
-    {TokenType::plus, "pluc"},
+    {TokenType::plus, "plus"},
     {TokenType::dec, "dec"},
     {TokenType::arrow, "arrow"},
     {TokenType::minus, "minus"},
@@ -76,11 +80,13 @@ const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::bitnot, "bitnot"},
     {TokenType::bitxor, "bitxor"},
 
+    {TokenType::voidtok, "void"},
     {TokenType::inttok, "int"},
     {TokenType::floattok, "float"},
     {TokenType::doubletok, "double"},
     {TokenType::chartok, "char"},
     {TokenType::booltok, "bool"},
+    {TokenType::unsignedtok, "unsigned"},
     {TokenType::classtok, "class"},
     {TokenType::structtok, "struct"},
     {TokenType::iftok, "if"},
