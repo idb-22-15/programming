@@ -54,8 +54,6 @@ class Matrix {
             row.push_back(num);
           else {
             row.push_back(0);
-            /*     matrix.resize(0);
-                 throw std::runtime_error("Invalid matrix size");*/
           }
         }
       }
