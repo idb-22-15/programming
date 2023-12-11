@@ -20,13 +20,13 @@ struct Token {
   Position position;
 
   static const std::map<std::string, TokenType> reserved_idents;
-  static const std::map<TokenType, std::string> printable_literals;
+  static const std::map<TokenType, std::string> token_types_printable;
   static const std::map<TokenType, std::regex> regex_table;
 
   Token(TokenType type, std::string literal, Position position)
       : position(position) {
     this->type = type;
-    this->type_printable = Token::printable_literals.at(type);
+    this->type_printable = Token::token_types_printable.at(type);
     this->literal = literal;
   }
 };
@@ -44,7 +44,7 @@ const std::map<std::string, TokenType> Token::reserved_idents{
     {"public", TokenType::publictok},      {"private", TokenType::privatetok},
     {"protected", TokenType::protectedtok}};
 
-const std::map<TokenType, std::string> Token::printable_literals{
+const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::number, "number lit"},
     {TokenType::charlit, "char lit"},
     {TokenType::string, "string lit"},

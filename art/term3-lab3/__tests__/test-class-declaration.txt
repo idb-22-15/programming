@@ -7,8 +7,10 @@ class Cat: public Animal {
   Cat(int count_legs = 4): legs(count_legs) {}
 
   void meow() {
-
+    int meow_type = 5 / 2 * 7;
   }
 
   bool is_black();
+
+  ~Cat() {}
 };

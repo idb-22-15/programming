@@ -32,8 +32,10 @@ class Statement {
 const std::map<NodeType, std::string> Statement::node_types_table_printable{
     {NodeType::program, "program"},
     {NodeType::var_declaration, "var_declaration"},
+    {NodeType::class_declaration, "class_declaration"},
 
     {NodeType::binary_expr, "binary_expr"},
+    {NodeType::assignment_expr, "assignment_expr"},
     {NodeType::identifier, "identifier"},
     {NodeType::numeric_literal, "numberic_literal"},
     {NodeType::char_literal, "char_literal"},
@@ -98,6 +100,9 @@ class BoolLiteral : public Expr {
   const bool value;
   BoolLiteral(bool value) : value(value) {}
 };
+
+class Declaration : public Statement {};
+
 class VarType {
  public:
   TokenType type;
@@ -106,8 +111,6 @@ class VarType {
   VarType(TokenType type, bool is_const = false, bool is_signed = true)
       : is_const(is_const), is_signed(is_signed) {}
 };
-
-class Declaration : public Statement {};
 
 class VarDeclaration : public Declaration {
  public:

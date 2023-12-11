@@ -28,11 +28,12 @@ class UnexpectedToken : public std::exception {
 
   UnexpectedToken(TokenType expected, Token received) : received(received) {
     this->expected = std::experimental::make_optional(expected);
-    this->message = "Expected type: " + Token::printable_literals.at(expected) +
-                    "; received type: " + this->received.type_printable +
-                    ", literal: " + this->received.literal + ", start: " +
-                    std::to_string(this->received.position.start) +
-                    ", end: " + std::to_string(this->received.position.end);
+    this->message =
+        "Expected type: " + Token::token_types_printable.at(expected) +
+        "; received type: " + this->received.type_printable +
+        ", literal: " + this->received.literal +
+        ", start: " + std::to_string(this->received.position.start) +
+        ", end: " + std::to_string(this->received.position.end);
   }
 
   virtual const char* what() const throw() { return this->message.c_str(); }
@@ -84,8 +85,8 @@ class Parser {
     Token tok = this->eat();
     if (tok.type != type1 && tok.type != type2)
       throw UnexpectedToken(
-          tok, "Expected type: " + Token::printable_literals.at(type1) +
-                   " or " + Token::printable_literals.at(type2));
+          tok, "Expected type: " + Token::token_types_printable.at(type1) +
+                   " or " + Token::token_types_printable.at(type2));
     return tok;
   }
 
@@ -93,9 +94,9 @@ class Parser {
     Token tok = this->eat();
     if (tok.type != type1 && tok.type != type2)
       throw UnexpectedToken(
-          tok, "Expected type: " + Token::printable_literals.at(type1) +
-                   " or " + Token::printable_literals.at(type2) + " or " +
-                   Token::printable_literals.at(type3));
+          tok, "Expected type: " + Token::token_types_printable.at(type1) +
+                   " or " + Token::token_types_printable.at(type2) + " or " +
+                   Token::token_types_printable.at(type3));
     return tok;
   }
 
@@ -133,21 +134,25 @@ class Parser {
         return FunctionDeclaration(return_type, identifier, params,
                                    std::experimental::nullopt);
       case TokenType::lsquirly: {
-        this->eat();
-
-        std::vector<Statement> body;
-
-        while (this->at().type != TokenType::rsquirly) {
-          body.push_back(this->parse_statement());
-          if (this->eof_or_illegal())
-            throw UnexpectedToken(this->at(), "Parse function body");
-        }
-        this->expect(TokenType::rsquirly);
+        std::vector<Statement> body = this->parse_function_body();
         return FunctionDeclaration(return_type, identifier, params, body);
       }
       default:
         throw UnexpectedToken(this->at(), "Parse function declaration");
     }
+  }
+
+  std::vector<Statement> parse_function_body() {
+    this->expect(TokenType::lsquirly);
+    std::vector<Statement> body;
+
+    while (this->at().type != TokenType::rsquirly) {
+      body.push_back(this->parse_statement());
+      if (this->eof_or_illegal())
+        throw UnexpectedToken(this->at(), "Parse function body");
+    }
+    this->expect(TokenType::rsquirly);
+    return body;
   }
 
   Declaration parse_var_declaration() {
@@ -332,6 +337,12 @@ class Parser {
           items.push_back(ClassItem(current_mode, constructor));
           break;
         }
+        case TokenType::bitnot: {
+          FunctionDeclaration destructor =
+              this->parse_dectructor(ident.literal);
+          items.push_back(ClassItem(current_mode, destructor));
+          break;
+        }
         case TokenType::publictok:
         case TokenType::privatetok:
         case TokenType::protectedtok: {
@@ -366,16 +377,7 @@ class Parser {
     std::vector<VarDeclaration> args = this->parse_args();
     if (this->at().type == TokenType::colon)
       this->parse_constructor_init_list();
-
-    std::vector<Statement> body;
-    this->expect(TokenType::lsquirly);
-
-    while (this->at().type != TokenType::rsquirly) {
-      body.push_back(this->parse_statement());
-      if (this->eof_or_illegal())
-        throw UnexpectedToken(this->at(), "Parse constructor body");
-    }
-    this->expect(TokenType::rsquirly);
+    std::vector<Statement> body = this->parse_function_body();
     return FunctionDeclaration(VarType(TokenType::voidtok), identtok.literal,
                                args, body);
   }
@@ -393,6 +395,18 @@ class Parser {
       if (this->eof_or_illegal())
         throw UnexpectedToken(this->at(), "Parse constructor init list");
     }
+  }
+
+  FunctionDeclaration parse_dectructor(std::string class_ident) {
+    this->expect(TokenType::bitnot);
+    Token identtok = this->expect(TokenType::ident);
+    if (identtok.literal != class_ident)
+      throw UnexpectedToken(this->at(), "Wrong destructor name");
+    this->expect(TokenType::lparen);
+    this->expect(TokenType::rparen);
+    std::vector<Statement> body = this->parse_function_body();
+    return FunctionDeclaration(TokenType::voidtok, class_ident,
+                               std::vector<VarDeclaration>(), body);
   }
 
   // void parse_class_item_access_modifier() {
