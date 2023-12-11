@@ -2,6 +2,7 @@
 #include <experimental/optional>
 #include <map>
 #include <string>
+#include <variant>
 
 #include "Token.cpp"
 
@@ -10,6 +11,7 @@ enum class NodeType {
   program,
   var_declaration,
   function_declaration,
+  class_declaration,
 
   // expressions
   binary_expr,
@@ -105,7 +107,9 @@ class VarType {
       : is_const(is_const), is_signed(is_signed) {}
 };
 
-class VarDeclaration : public Statement {
+class Declaration : public Statement {};
+
+class VarDeclaration : public Declaration {
  public:
   const NodeType type = NodeType::var_declaration;
   VarType var_type;
@@ -117,7 +121,7 @@ class VarDeclaration : public Statement {
       : var_type(var_type), identifier(identifier), value(value) {}
 };
 
-class FunctionDeclaration : public Statement {
+class FunctionDeclaration : public Declaration {
  public:
   const NodeType type = NodeType::function_declaration;
   VarType return_type;
@@ -132,4 +136,25 @@ class FunctionDeclaration : public Statement {
         identifier(identifier),
         params(params),
         body(body) {}
+};
+
+enum class AccessModifier {
+  publicmod,
+  privatemod,
+  protectedmod,
+};
+class ClassItem {
+ public:
+  AccessModifier mod;
+  Declaration item;
+  ClassItem(AccessModifier mod, Declaration item) : mod(mod), item(item) {}
+};
+
+class ClassDeclaration : public Declaration {
+ public:
+  const NodeType type = NodeType::class_declaration;
+  std::string identifier;
+  std::vector<ClassItem> items;
+  ClassDeclaration(std::string identifier, std::vector<ClassItem> items)
+      : identifier(identifier), items(items) {}
 };

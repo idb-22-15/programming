@@ -89,6 +89,16 @@ class Parser {
     return tok;
   }
 
+  Token expect(TokenType type1, TokenType type2, TokenType type3) {
+    Token tok = this->eat();
+    if (tok.type != type1 && tok.type != type2)
+      throw UnexpectedToken(
+          tok, "Expected type: " + Token::printable_literals.at(type1) +
+                   " or " + Token::printable_literals.at(type2) + " or " +
+                   Token::printable_literals.at(type3));
+    return tok;
+  }
+
   Statement parse_statement() {
     // return this->parse_function_declaration();
     switch (this->at().type) {
@@ -113,8 +123,8 @@ class Parser {
     };
   }
 
-  Statement parse_function_declaration(VarType return_type,
-                                       std::string identifier) {
+  Declaration parse_function_declaration(VarType return_type,
+                                         std::string identifier) {
     std::vector<VarDeclaration> params = this->parse_args();
 
     switch (this->at().type) {
@@ -140,7 +150,7 @@ class Parser {
     }
   }
 
-  Statement parse_var_declaration() {
+  Declaration parse_var_declaration() {
     VarType var_type = this->parse_var_type();
     Token ident = this->expect(TokenType::ident);
 
@@ -297,23 +307,48 @@ class Parser {
   }
 
   Statement parse_class_declaration() {
-    this->expect(TokenType::classtok, TokenType::structtok);
+    Token classtok = this->expect(TokenType::classtok, TokenType::structtok);
     Token ident = this->expect(TokenType::ident);
+    if (this->at().type == TokenType::colon) {
+      this->eat();
+      do {
+        this->expect(TokenType::publictok, TokenType::privatetok,
+                     TokenType::protectedtok);
+        this->expect(TokenType::ident);
+      } while (this->at().type == TokenType::comma);
+    }
+
     this->expect(TokenType::lsquirly);
+    std::vector<ClassItem> items;
+    AccessModifier current_mode = classtok.type == TokenType::classtok
+                                      ? AccessModifier::privatemod
+                                      : AccessModifier::publicmod;
 
     while (this->at().type != TokenType::rsquirly) {
       switch (this->at().type) {
-        case TokenType::ident:
-          this->parse_constructor(ident.literal);
+        case TokenType::ident: {
+          FunctionDeclaration constructor =
+              this->parse_constructor(ident.literal);
+          items.push_back(ClassItem(current_mode, constructor));
           break;
+        }
         case TokenType::publictok:
         case TokenType::privatetok:
         case TokenType::protectedtok: {
-          this->eat();
+          Token modtok = this->eat();
+          if (modtok.type == TokenType::publictok)
+            current_mode = AccessModifier::publicmod;
+          else if (modtok.type == TokenType::privatetok)
+            current_mode = AccessModifier::privatemod;
+          else if (modtok.type == TokenType::protectedtok)
+            current_mode = AccessModifier::protectedmod;
+
           this->expect(TokenType::colon);
+          break;
         }
         default:
-          this->parse_var_declaration();
+          Declaration declaration = this->parse_var_declaration();
+          items.push_back(ClassItem(current_mode, declaration));
       }
       if (this->eof_or_illegal())
         throw UnexpectedToken(this->at(), "Parse class body");
@@ -321,20 +356,28 @@ class Parser {
 
     this->expect(TokenType::rsquirly);
     this->expect(TokenType::semicolon);
-    return Statement();
+    return ClassDeclaration(ident.literal, items);
   };
 
-  Statement parse_constructor(std::string class_ident) {
+  FunctionDeclaration parse_constructor(std::string class_ident) {
     Token identtok = this->expect(TokenType::ident);
     if (identtok.literal != class_ident)
       throw UnexpectedToken(this->at(), "Wrong constructor name");
-    this->parse_args();
+    std::vector<VarDeclaration> args = this->parse_args();
     if (this->at().type == TokenType::colon)
       this->parse_constructor_init_list();
 
+    std::vector<Statement> body;
     this->expect(TokenType::lsquirly);
+
+    while (this->at().type != TokenType::rsquirly) {
+      body.push_back(this->parse_statement());
+      if (this->eof_or_illegal())
+        throw UnexpectedToken(this->at(), "Parse constructor body");
+    }
     this->expect(TokenType::rsquirly);
-    return Statement();
+    return FunctionDeclaration(VarType(TokenType::voidtok), identtok.literal,
+                               args, body);
   }
 
   void parse_constructor_init_list() {
@@ -352,5 +395,5 @@ class Parser {
     }
   }
 
-  // void parse_class_item_access_modifier() {}
+  // void parse_class_item_access_modifier() {
 };

@@ -40,12 +40,16 @@ comment
 ~
 ^
 
+void
 int
 float
 double
 char
 bool
+true
+false
 class
+unsigned
 struct
 if
 else
@@ -54,6 +58,10 @@ while
 for
 const
 auto
+
+public
+private
+protected
 
 class Foo() {
   int a;

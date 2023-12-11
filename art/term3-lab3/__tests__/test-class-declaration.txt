@@ -1,4 +1,4 @@
-class Cat {
+class Cat: public Animal {
   private:
   unsigned int legs;
   public:
