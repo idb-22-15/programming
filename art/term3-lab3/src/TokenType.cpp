@@ -45,6 +45,8 @@ enum struct TokenType {
   doubletok,    // double
   chartok,      // char
   booltok,      // bool
+  truetok,      // true
+  falsetok,     // false
   unsignedtok,  // unsigned
   classtok,     // class
   structtok,    // struct
@@ -55,6 +57,10 @@ enum struct TokenType {
   fortok,       // for
   consttok,     // const
   autotok,      // auto
+
+  publictok,     // public
+  privatetok,    // private
+  protectedtok,  // protected
 
   eof,
   illegal

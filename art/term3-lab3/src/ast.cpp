@@ -9,12 +9,15 @@ enum class NodeType {
   // statements
   program,
   var_declaration,
+  function_declaration,
 
   // expressions
   binary_expr,
+  assignment_expr,
   identifier,
   numeric_literal,
   char_literal,
+  bool_literal,
   string_literal,
 };
 
@@ -52,6 +55,14 @@ class BinaryExpr : public Expr {
       : left(left), right(right), op(op) {}
 };
 
+class AssignmentExpr : public Expr {
+ public:
+  const NodeType type = NodeType::assignment_expr;
+  Expr assigne;
+  Expr value;
+  AssignmentExpr(Expr assigne, Expr value) : assigne(assigne), value(value) {}
+};
+
 class Identifier : public Expr {
  public:
   const NodeType type = NodeType::identifier;
@@ -79,14 +90,46 @@ class CharLiteral : public Expr {
   CharLiteral(char ch) : ch(ch) {}
 };
 
+class BoolLiteral : public Expr {
+ public:
+  const NodeType type = NodeType::bool_literal;
+  const bool value;
+  BoolLiteral(bool value) : value(value) {}
+};
+class VarType {
+ public:
+  TokenType type;
+  bool is_const = false;
+  bool is_signed = true;
+  VarType(TokenType type, bool is_const = false, bool is_signed = true)
+      : is_const(is_const), is_signed(is_signed) {}
+};
+
 class VarDeclaration : public Statement {
  public:
   const NodeType type = NodeType::var_declaration;
-  bool is_const;
+  VarType var_type;
   std::string identifier;
   std::experimental::optional<Expr> value;
-  VarDeclaration(bool is_const,
+  VarDeclaration(VarType var_type,
                  std::string identifier,
                  std::experimental::optional<Expr> value)
-      : is_const(is_const), identifier(identifier), value(value) {}
+      : var_type(var_type), identifier(identifier), value(value) {}
+};
+
+class FunctionDeclaration : public Statement {
+ public:
+  const NodeType type = NodeType::function_declaration;
+  VarType return_type;
+  std::string identifier;
+  std::vector<VarDeclaration> params;
+  std::experimental::optional<std::vector<Statement>> body;
+  FunctionDeclaration(VarType return_type,
+                      std::string identifier,
+                      std::vector<VarDeclaration> params,
+                      std::experimental::optional<std::vector<Statement>> body)
+      : return_type(return_type),
+        identifier(identifier),
+        params(params),
+        body(body) {}
 };

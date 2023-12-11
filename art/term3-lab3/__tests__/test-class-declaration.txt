@@ -1,0 +1,14 @@
+class Cat {
+  private:
+  unsigned int legs;
+  public:
+  int color;
+
+  Cat(int count_legs = 4): legs(count_legs) {}
+
+  void meow() {
+
+  }
+
+  bool is_black();
+};

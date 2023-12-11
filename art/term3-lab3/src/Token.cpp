@@ -32,14 +32,17 @@ struct Token {
 };
 
 const std::map<std::string, TokenType> Token::reserved_idents{
-    {"void", TokenType::voidtok},         {"int", TokenType::inttok},
-    {"float", TokenType::floattok},       {"double", TokenType::doubletok},
-    {"char", TokenType::chartok},         {"bool", TokenType::booltok},
-    {"unsigned", TokenType::unsignedtok}, {"class", TokenType::classtok},
-    {"struct", TokenType::structtok},     {"if", TokenType::iftok},
-    {"else", TokenType::elsetok},         {"do", TokenType::dotok},
-    {"while", TokenType::whiletok},       {"for", TokenType::fortok},
-    {"const", TokenType::consttok},       {"auto", TokenType::autotok}};
+    {"void", TokenType::voidtok},          {"int", TokenType::inttok},
+    {"float", TokenType::floattok},        {"double", TokenType::doubletok},
+    {"char", TokenType::chartok},          {"bool", TokenType::booltok},
+    {"true", TokenType::truetok},          {"false", TokenType::falsetok},
+    {"unsigned", TokenType::unsignedtok},  {"class", TokenType::classtok},
+    {"struct", TokenType::structtok},      {"if", TokenType::iftok},
+    {"else", TokenType::elsetok},          {"do", TokenType::dotok},
+    {"while", TokenType::whiletok},        {"for", TokenType::fortok},
+    {"const", TokenType::consttok},        {"auto", TokenType::autotok},
+    {"public", TokenType::publictok},      {"private", TokenType::privatetok},
+    {"protected", TokenType::protectedtok}};
 
 const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::number, "number lit"},
@@ -86,6 +89,8 @@ const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::doubletok, "double"},
     {TokenType::chartok, "char"},
     {TokenType::booltok, "bool"},
+    {TokenType::truetok, "true"},
+    {TokenType::falsetok, "false"},
     {TokenType::unsignedtok, "unsigned"},
     {TokenType::classtok, "class"},
     {TokenType::structtok, "struct"},
@@ -96,6 +101,10 @@ const std::map<TokenType, std::string> Token::printable_literals{
     {TokenType::fortok, "for"},
     {TokenType::consttok, "const"},
     {TokenType::autotok, "auto"},
+
+    {TokenType::publictok, "public"},
+    {TokenType::privatetok, "private"},
+    {TokenType::protectedtok, "protected"},
 
     {TokenType::eof, "eof"},
     {TokenType::illegal, "illegal"}};
