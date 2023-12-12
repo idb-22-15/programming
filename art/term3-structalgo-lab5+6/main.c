@@ -9,7 +9,7 @@ void swap(int* first, int* second) {
   *second = tmp;
 }
 
-void println_array(const int arr[], unsigned len) {
+void println_array(const int arr[], size_t len) {
   for (int i = 0; i < len; i++) {
     printf("%d\t", arr[i]);
   }
@@ -17,7 +17,7 @@ void println_array(const int arr[], unsigned len) {
 }
 
 void println_array_with_pointers(const int arr[],
-                                 unsigned len,
+                                 size_t len,
                                  const int* const p1,
                                  const int* const p2) {
   for (int i = 0; i < len; i++) {
@@ -29,13 +29,13 @@ void println_array_with_pointers(const int arr[],
   printf("\n");
 }
 
-int* copy_arr(const int src_arr[], unsigned len) {
+int* copy_arr(const int src_arr[], size_t len) {
   int* copy = calloc(sizeof(int), len);
   memcpy(copy, src_arr, sizeof(int) * len);
   return copy;
 }
 
-bool is_sorted(int arr[], unsigned len) {
+bool is_sorted(int arr[], size_t len) {
   bool is_sorted = true;
   for (int i = 0; i < len - 1; i++) {
     if (arr[i] > arr[i + 1]) {
@@ -46,12 +46,12 @@ bool is_sorted(int arr[], unsigned len) {
   return is_sorted;
 }
 
-int* selection_sorted(const int src_arr[], unsigned len) {
+int* selection_sorted(const int src_arr[], size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
   for (int i = 0; i < len - 1; i++) {
-    unsigned min_index = i;
+    size_t min_index = i;
     for (int j = i + 1; j < len; j++) {
       if (arr[j] < arr[min_index])
         min_index = j;
@@ -64,13 +64,13 @@ int* selection_sorted(const int src_arr[], unsigned len) {
   return arr;
 }
 
-int* insertion_sorted(const int src_arr[], unsigned len) {
+int* insertion_sorted(const int src_arr[], size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
   for (int i = 0; i < len - 1; i++) {
     if (arr[i] > arr[i + 1]) {
-      unsigned index = i;
+      size_t index = i;
       while (index >= 0 && arr[index] > arr[index + 1]) {
         println_array_with_pointers(arr, len, &arr[index], &arr[index + 1]);
         swap(&arr[index], &arr[index + 1]);
@@ -85,7 +85,7 @@ int* insertion_sorted(const int src_arr[], unsigned len) {
   return arr;
 }
 
-int* bubble_sorted(const int src_arr[], const unsigned len) {
+int* bubble_sorted(const int src_arr[], const size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
@@ -103,7 +103,7 @@ int* bubble_sorted(const int src_arr[], const unsigned len) {
   return arr;
 }
 
-int* shaker_sorted(const int src_arr[], unsigned len) {
+int* shaker_sorted(const int src_arr[], size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
@@ -133,11 +133,11 @@ int* shaker_sorted(const int src_arr[], unsigned len) {
   return arr;
 }
 
-int partititate_array(int arr[], unsigned len, unsigned low, unsigned high) {
-  unsigned pivot_index = high;
+int partititate_array(int arr[], size_t len, size_t low, size_t high) {
+  size_t pivot_index = high;
   int pivot_value = arr[pivot_index];
 
-  unsigned new_pivot_index = low;
+  size_t new_pivot_index = low;
   for (int i = low; i <= high; i++) {
     println_array_with_pointers(arr, len, &arr[low], &arr[i]);
     if (arr[i] < pivot_value) {
@@ -150,15 +150,15 @@ int partititate_array(int arr[], unsigned len, unsigned low, unsigned high) {
   return new_pivot_index;
 }
 
-void quick_sort(int arr[], unsigned len, unsigned low, unsigned high) {
+void quick_sort(int arr[], size_t len, size_t low, size_t high) {
   if (low < high) {
-    unsigned pivot_index = partititate_array(arr, len, low, high);
+    size_t pivot_index = partititate_array(arr, len, low, high);
     quick_sort(arr, len, low, pivot_index - 1);
     quick_sort(arr, len, pivot_index + 1, high);
   }
 }
 
-int* quick_sorted(const int src_arr[], unsigned len) {
+int* quick_sorted(const int src_arr[], size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
 
@@ -168,14 +168,63 @@ int* quick_sorted(const int src_arr[], unsigned len) {
   return arr;
 }
 
-void merge_sort(int arr[]) {}
+void merge(int arr[], size_t left, size_t mid, size_t right) {
+  int left_arr_count_elements = mid - left + 1;
+  int right_arr_count_elements = right - mid;
 
-void merge(int arr[], unsigned left, unsigned middle, unsigned right) {}
+  int* left_arr = calloc(left_arr_count_elements, sizeof(int));
+  int* right_arr = calloc(right_arr_count_elements, sizeof(int));
 
-int* merge_sorted(const int src_arr[], unsigned len) {
+  for (size_t i = 0; i < left_arr_count_elements; i++)
+    left_arr[i] = arr[left + i];
+  for (size_t i = 0; i < right_arr_count_elements; i++)
+    right_arr[i] = arr[mid + 1 + i];
+
+  size_t left_arr_index = 0;
+  size_t right_arr_index = 0;
+  size_t merged_arr_index = left;
+
+  // Merge the temp arrays back into array[left..right]
+  while (left_arr_index < left_arr_count_elements &&
+         right_arr_index < right_arr_count_elements) {
+    if (left_arr[left_arr_index] <= right_arr[right_arr_index]) {
+      arr[merged_arr_index] = left_arr[left_arr_index];
+      left_arr_index++;
+    } else {
+      arr[merged_arr_index] = right_arr[right_arr_index];
+      right_arr_index++;
+    }
+    merged_arr_index++;
+  }
+
+  for (; left_arr_index < left_arr_count_elements;
+       left_arr_index++, merged_arr_index++) {
+    arr[merged_arr_index] = left_arr[left_arr_index];
+  }
+
+  for (; right_arr_index < right_arr_count_elements;
+       right_arr_index++, merged_arr_index++) {
+    arr[merged_arr_index] = right_arr[right_arr_index];
+  }
+
+  free(left_arr);
+  free(right_arr);
+}
+
+void merge_sort(int array[], int start, int end) {
+  if (start >= end)
+    return;
+
+  int mid = start + (end - start) / 2;
+  merge_sort(array, start, mid);
+  merge_sort(array, mid + 1, end);
+  merge(array, start, mid, end);
+}
+
+int* merge_sorted(const int src_arr[], size_t len) {
   int* arr = copy_arr(src_arr, len);
   println_array(arr, len);
-
+  merge_sort(arr, 0, len);
   println_array(arr, len);
   return arr;
 }
@@ -191,4 +240,6 @@ int main() {
   // shaker_sorted(arr, len);
 
   // quick_sorted(arr, len);
+
+  // merge_sorted(arr, len);
 }
