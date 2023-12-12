@@ -39,6 +39,7 @@ enum struct TokenType {
   bitnot,     // ~
   bitxor,     // ^
 
+  returntok,    // return
   voidtok,      // void
   inttok,       // int
   floattok,     // float

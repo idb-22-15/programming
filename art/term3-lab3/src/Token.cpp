@@ -32,17 +32,17 @@ struct Token {
 };
 
 const std::map<std::string, TokenType> Token::reserved_idents{
-    {"void", TokenType::voidtok},          {"int", TokenType::inttok},
-    {"float", TokenType::floattok},        {"double", TokenType::doubletok},
-    {"char", TokenType::chartok},          {"bool", TokenType::booltok},
-    {"true", TokenType::truetok},          {"false", TokenType::falsetok},
-    {"unsigned", TokenType::unsignedtok},  {"class", TokenType::classtok},
-    {"struct", TokenType::structtok},      {"if", TokenType::iftok},
-    {"else", TokenType::elsetok},          {"do", TokenType::dotok},
-    {"while", TokenType::whiletok},        {"for", TokenType::fortok},
-    {"const", TokenType::consttok},        {"auto", TokenType::autotok},
-    {"public", TokenType::publictok},      {"private", TokenType::privatetok},
-    {"protected", TokenType::protectedtok}};
+    {"return", TokenType::returntok},   {"void", TokenType::voidtok},
+    {"int", TokenType::inttok},         {"float", TokenType::floattok},
+    {"double", TokenType::doubletok},   {"char", TokenType::chartok},
+    {"bool", TokenType::booltok},       {"true", TokenType::truetok},
+    {"false", TokenType::falsetok},     {"unsigned", TokenType::unsignedtok},
+    {"class", TokenType::classtok},     {"struct", TokenType::structtok},
+    {"if", TokenType::iftok},           {"else", TokenType::elsetok},
+    {"do", TokenType::dotok},           {"while", TokenType::whiletok},
+    {"for", TokenType::fortok},         {"const", TokenType::consttok},
+    {"auto", TokenType::autotok},       {"public", TokenType::publictok},
+    {"private", TokenType::privatetok}, {"protected", TokenType::protectedtok}};
 
 const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::number, "number lit"},
@@ -83,6 +83,7 @@ const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::bitnot, "bitnot"},
     {TokenType::bitxor, "bitxor"},
 
+    {TokenType::returntok, "return"},
     {TokenType::voidtok, "void"},
     {TokenType::inttok, "int"},
     {TokenType::floattok, "float"},

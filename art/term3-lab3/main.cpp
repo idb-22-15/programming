@@ -41,6 +41,18 @@ void parse_or_print_error(const std::string& input) {
   }
 };
 
+std::string read_file_of_die(const std::string& filename) {
+  std::ifstream file(filename);
+  if (!file) {
+    std::cerr << "error opening the file" << std::endl;
+    exit(1);
+  }
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string file_content = buffer.str();
+  return file_content;
+}
+
 int main(int argc, char** argv) {
   if (argc == 1) {
     parse_or_print_error("int x = 5;");
@@ -58,16 +70,8 @@ int main(int argc, char** argv) {
   }
 
   else if (argc == 2) {
-    std::ifstream file(argv[1]);
-    if (file) {
-      std::stringstream buffer;
-      buffer << file.rdbuf();
-      std::string test_string = buffer.str();
-      parse_or_print_error(test_string);
-      exit(0);
-    } else {
-      std::cerr << "error opening the file" << std::endl;
-    }
+    std::string file_content = read_file_of_die(argv[1]);
+    parse_or_print_error(file_content);
   }
 
   else if (argc > 2) {

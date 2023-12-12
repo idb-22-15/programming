@@ -1,8 +1,9 @@
-class Cat: public Animal {
+class Cat: public Animal, public IMeowable {
   private:
-  unsigned int legs;
-  public:
-  int color;
+  unsigned int legs; // this are legs
+  public: 
+  int color; /* this is color*/
+  const int id = 999;
 
   Cat(int count_legs = 4): legs(count_legs) {}
 
@@ -10,7 +11,13 @@ class Cat: public Animal {
     int meow_type = 5 / 2 * 7;
   }
 
+  int get_id() {
+    return 4;
+  }
+
   bool is_black();
 
   ~Cat() {}
+
+  class Brain {};
 };

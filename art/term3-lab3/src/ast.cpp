@@ -9,6 +9,10 @@
 enum class NodeType {
   // statements
   program,
+  block_statement,
+  return_statement,
+
+  // declarations
   var_declaration,
   function_declaration,
   class_declaration,
@@ -16,6 +20,8 @@ enum class NodeType {
   // expressions
   binary_expr,
   assignment_expr,
+
+  // literals
   identifier,
   numeric_literal,
   char_literal,
@@ -31,7 +37,12 @@ class Statement {
 
 const std::map<NodeType, std::string> Statement::node_types_table_printable{
     {NodeType::program, "program"},
+
+    {NodeType::block_statement, "block_statement"},
+    {NodeType::return_statement, "return_statement"},
+
     {NodeType::var_declaration, "var_declaration"},
+    {NodeType::function_declaration, "function_declaration"},
     {NodeType::class_declaration, "class_declaration"},
 
     {NodeType::binary_expr, "binary_expr"},
@@ -45,16 +56,31 @@ const std::map<NodeType, std::string> Statement::node_types_table_printable{
 class Program : public Statement {
  public:
   const NodeType type = NodeType::program;
-  std::vector<Statement> body;
+  const std::vector<Statement> body;
+  Program(std::vector<Statement> body) : body(body){};
 };
 
 class Expr : public Statement {};
+
+class BlockStatement : public Statement {
+ public:
+  const NodeType type = NodeType::block_statement;
+  const std::vector<Statement> body;
+  BlockStatement(std::vector<Statement> body) : body(body){};
+};
+
+class ReturnStatement : public Statement {
+ public:
+  const NodeType type = NodeType::return_statement;
+  const Expr value;
+  ReturnStatement(Expr value) : value(value) {}
+};
 class BinaryExpr : public Expr {
  public:
   const NodeType type = NodeType::binary_expr;
-  Expr left;
-  Expr right;
-  TokenType op;
+  const Expr left;
+  const Expr right;
+  const TokenType op;
   BinaryExpr(Expr left, Expr right, TokenType op)
       : left(left), right(right), op(op) {}
 };
@@ -62,15 +88,16 @@ class BinaryExpr : public Expr {
 class AssignmentExpr : public Expr {
  public:
   const NodeType type = NodeType::assignment_expr;
-  Expr assigne;
-  Expr value;
+  const Expr assigne;
+  const Expr value;
   AssignmentExpr(Expr assigne, Expr value) : assigne(assigne), value(value) {}
 };
 
 class Identifier : public Expr {
  public:
   const NodeType type = NodeType::identifier;
-  std::string symbol;
+  const std::string identifier;
+  Identifier(std::string identifier) : identifier(identifier) {}
 };
 
 class StringLiteral : public Expr {
@@ -105,19 +132,19 @@ class Declaration : public Statement {};
 
 class VarType {
  public:
-  TokenType type;
-  bool is_const = false;
-  bool is_signed = true;
+  const TokenType type;
+  const bool is_const = false;
+  const bool is_signed = true;
   VarType(TokenType type, bool is_const = false, bool is_signed = true)
-      : is_const(is_const), is_signed(is_signed) {}
+      : type(type), is_const(is_const), is_signed(is_signed) {}
 };
 
 class VarDeclaration : public Declaration {
  public:
   const NodeType type = NodeType::var_declaration;
-  VarType var_type;
-  std::string identifier;
-  std::experimental::optional<Expr> value;
+  const VarType var_type;
+  const std::string identifier;
+  const std::experimental::optional<Expr> value;
   VarDeclaration(VarType var_type,
                  std::string identifier,
                  std::experimental::optional<Expr> value)
@@ -127,10 +154,10 @@ class VarDeclaration : public Declaration {
 class FunctionDeclaration : public Declaration {
  public:
   const NodeType type = NodeType::function_declaration;
-  VarType return_type;
-  std::string identifier;
-  std::vector<VarDeclaration> params;
-  std::experimental::optional<std::vector<Statement>> body;
+  const VarType return_type;
+  const std::string identifier;
+  const std::vector<VarDeclaration> params;
+  const std::experimental::optional<std::vector<Statement>> body;
   FunctionDeclaration(VarType return_type,
                       std::string identifier,
                       std::vector<VarDeclaration> params,
@@ -146,18 +173,30 @@ enum class AccessModifier {
   privatemod,
   protectedmod,
 };
+
+class ClassParent {
+ public:
+  const AccessModifier mod;
+  const std::string identifier;
+  ClassParent(AccessModifier mod, std::string identifier)
+      : mod(mod), identifier(identifier) {}
+};
+
 class ClassItem {
  public:
-  AccessModifier mod;
-  Declaration item;
+  const AccessModifier mod;
+  const Declaration item;
   ClassItem(AccessModifier mod, Declaration item) : mod(mod), item(item) {}
 };
 
 class ClassDeclaration : public Declaration {
  public:
   const NodeType type = NodeType::class_declaration;
-  std::string identifier;
-  std::vector<ClassItem> items;
-  ClassDeclaration(std::string identifier, std::vector<ClassItem> items)
-      : identifier(identifier), items(items) {}
+  const std::string identifier;
+  const std::vector<ClassParent> parents;
+  const std::vector<ClassItem> items;
+  ClassDeclaration(std::string identifier,
+                   std::vector<ClassParent> parents,
+                   std::vector<ClassItem> items)
+      : identifier(identifier), parents(parents), items(items) {}
 };

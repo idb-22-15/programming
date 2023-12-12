@@ -13,7 +13,7 @@ class Lexer {
   size_t col = 1;
 
  public:
-  void init(std::string input) {
+  void init(std::string& input) {
     this->input = input;
     this->cursor = 0;
   }
@@ -27,13 +27,19 @@ class Lexer {
       tok = this->next();
       tokens.push_back(tok);
     }
+    std::vector<Token> filtered_tokens;
+    std::copy_if(tokens.begin(), tokens.end(),
+                 std::back_inserter(filtered_tokens), [](Token tok) {
+                   return !(tok.type == TokenType::linecomm ||
+                            tok.type == TokenType::longcomm);
+                 });
 
-    return tokens;
+    return filtered_tokens;
   }
 
  private:
-  std::experimental::optional<std::string> match(std::string str,
-                                                 std::regex regex) {
+  std::experimental::optional<std::string> match(const std::string& str,
+                                                 const std::regex& regex) {
     std::smatch results;
 
     if (std::regex_search(str, results, regex)) {
@@ -79,46 +85,6 @@ class Lexer {
     if (!this->has_more_tokens())
       return Token(TokenType::eof, "\0",
                    Position(this->cursor, this->cursor, this->line, this->col));
-
-    // if (this->at() == '-' && this->peek() == '>') {
-    //   return Token(TokenType::arrow, "->",
-    //                Position(this->move_cursor(2), this->cursor));
-    // } else if (this->at() == '-') {
-    //   return Token(TokenType::minus, "-",
-    //                Position(this->move_cursor(), this->cursor));
-    // }
-
-    // if (this->at() == '>' && this->peek() == '=') {
-    //   cursor += 2;
-    //   return Token(TokenType::geq, ">=", Position(cursor - 2, cursor));
-    // } else if (this->at() == '>') {
-    //   cursor++;
-    //   return Token(TokenType::gtr, ">", Position(cursor - 1, cursor));
-    // }
-
-    // if (this->at() == '<' && this->peek() == '=') {
-    //   cursor += 2;
-    //   return Token(TokenType::leq, "<=", Position(cursor - 2, cursor));
-    // } else if (this->at() == '<') {
-    //   cursor++;
-    //   return Token(TokenType::lss, "<", Position(cursor - 1, cursor));
-    // }
-
-    // if (this->at() == '&' && this->peek() == '&') {
-    //   cursor += 2;
-    //   return Token(TokenType::logicand, "&&", Position(cursor - 2, cursor));
-    // } else if (this->at() == '&') {
-    //   cursor++;
-    //   return Token(TokenType::bitcand, "&", Position(cursor - 1, cursor));
-    // }
-
-    // if (this->at() == '|' && this->peek() == '|') {
-    //   cursor += 2;
-    //   return Token(TokenType::logicor, "||", Position(cursor - 2, cursor));
-    // } else if (this->at() == '|') {
-    //   cursor++;
-    //   return Token(TokenType::bitcor, "|", Position(cursor - 1, cursor));
-    // }
 
     if (this->at() == '/' && this->peek() == '/') {
       this->move_cursor(2);
@@ -179,9 +145,10 @@ class Lexer {
 
     std::string illegal_literal = "";
     illegal_literal += this->at();
+    size_t start_cursor = this->move_cursor();
     size_t line = this->line;
     size_t col = this->col;
     return Token(TokenType::illegal, illegal_literal,
-                 Position(this->move_cursor(), this->cursor, line, col));
+                 Position(start_cursor, this->cursor, line, col));
   }
 };
