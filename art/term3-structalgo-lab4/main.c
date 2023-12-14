@@ -106,7 +106,8 @@ void menu_ll_choose_task() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "empty")) {
-      if (ll_is_empty(list)) println_list_is_empty();
+      if (ll_is_empty(list))
+        println_list_is_empty();
       else {
         ll_make_empty(&list);
         pointer = NULL;
@@ -194,15 +195,16 @@ void menu_ll_choose_task() {
     }
 
     else if (!strcmp(choice, "10") || !strcmp(choice, "anext")) {
-        char new_value[BUFFER_SIZE];
-        printf("Введите новое значение для создания: ");
-        scanf("%s", new_value);
+      char new_value[BUFFER_SIZE];
+      printf("Введите новое значение для создания: ");
+      scanf("%s", new_value);
 
-        if (ll_is_empty(list)) {
-          list = ll_new_node(new_value[0]);
-          pointer = list;
-        } else ll_insert_after(list, ll_get_index(list, pointer), new_value[0]);
-        ll_println_with_pointer(list, pointer);
+      if (ll_is_empty(list)) {
+        list = ll_new_node(new_value[0]);
+        pointer = list;
+      } else
+        ll_insert_after(list, ll_get_index(list, pointer), new_value[0]);
+      ll_println_with_pointer(list, pointer);
     }
 
     else if (!strcmp(choice, "11") || !strcmp(choice, "p")) {
@@ -267,7 +269,7 @@ void menu_dl_print_help() {
       "\t6/isend    проверить, находится ли указатель в конце\n"
       "\t7/prev     сдвинуть указатель на следующий элемент\n"
       "\t8/next     сдвинуть указатель на предыдущий элемент\n"
-      "\t9/pprev   вывести значение элемента до указателя\n"
+      "\t9/pprev    вывести значение элемента до указателя\n"
       "\t10/pnext   вывести значение элемента за указателем\n"
       "\t11/dprev   удалить элемент до указателя\n"
       "\t12/dnext   удалить элемент за указателем\n"
@@ -299,7 +301,8 @@ void menu_dl_choose_task() {
     scanf("%s", choice);
 
     if (!strcmp(choice, "1") || !strcmp(choice, "empty")) {
-      if (dl_is_empty(list)) println_list_is_empty();
+      if (dl_is_empty(list))
+        println_list_is_empty();
       else {
         dl_make_empty(&list);
         printf("Список удалён\n");
@@ -473,7 +476,8 @@ void menu_dl_choose_task() {
       if (dl_is_empty(list)) {
         list = dl_new_node(new_value[0], NULL);
         pointer = list;
-      } else dl_insert_after(list, dl_get_index(list, pointer), new_value[0]);
+      } else
+        dl_insert_after(list, dl_get_index(list, pointer), new_value[0]);
       dl_println_with_pointer(list, pointer);
     }
 
