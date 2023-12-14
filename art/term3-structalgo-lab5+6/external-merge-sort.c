@@ -54,7 +54,7 @@ void merge_sort(int array[], size_t start, size_t end, size_t len) {
   merge_sort(array, start, mid, len);
   merge_sort(array, mid + 1, end, len);
   merge(array, start, mid, end);
-  println_array(array, len);
+  println_array(&array[start], end - start);
 }
 
 int* merge_sorted(const int src_arr[], size_t len) {
@@ -118,8 +118,8 @@ void external_merge_sort(FILE* input, FILE* output) {
   merge_sort(first_arr, 0, first_arr_size - 1, first_arr_size);
   merge_sort(second_arr, 0, second_arr_size - 1, second_arr_size);
 
-  const char* temp_filename1 = "tmp/temp1.txt";
-  const char* temp_filename2 = "tmp/temp2.txt";
+  const char* temp_filename1 = "temp1.txt";
+  const char* temp_filename2 = "temp2.txt";
   FILE* temp1 = fopen(temp_filename1, "w");
   FILE* temp2 = fopen(temp_filename2, "w");
 
@@ -137,8 +137,8 @@ void external_merge_sort(FILE* input, FILE* output) {
 
   fclose(temp1);
   fclose(temp2);
-  remove(temp_filename1);
-  remove(temp_filename2);
+  // remove(temp_filename1);
+  // remove(temp_filename2);
   free(first_arr);
   free(second_arr);
 }
@@ -151,8 +151,28 @@ void lab6() {
   external_merge_sort(input, output);
   fclose(input);
   fclose(output);
+
+  output = fopen(output_filename, "r");
+  int* arr = (int*)malloc(0);
+  size_t arr_size = 0;
+  int num;
+  while (fscanf(output, "%d", &num)) {
+    if (feof(output))
+      break;
+    arr_size++;
+    arr = (int*)realloc(arr, sizeof(int) * arr_size);
+    arr[arr_size - 1] = num;
+  }
+  println_array(arr, arr_size);
 }
 
 int main() {
   lab6();
 }
+
+// A 10 20 40 | 30 50 60 80 | 70
+
+// B 10 20 40 | 70
+// C 30 50 60 80
+
+// A 10 20 30 40 50 60 80 | 70
