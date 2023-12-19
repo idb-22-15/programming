@@ -41,8 +41,9 @@ const std::map<std::string, TokenType> Token::reserved_idents{
     {"if", TokenType::iftok},           {"else", TokenType::elsetok},
     {"do", TokenType::dotok},           {"while", TokenType::whiletok},
     {"for", TokenType::fortok},         {"const", TokenType::consttok},
-    {"auto", TokenType::autotok},       {"public", TokenType::publictok},
-    {"private", TokenType::privatetok}, {"protected", TokenType::protectedtok}};
+    {"auto", TokenType::autotok},       {"static", TokenType::statictok},
+    {"public", TokenType::publictok},   {"private", TokenType::privatetok},
+    {"protected", TokenType::protectedtok}};
 
 const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::number, "number lit"},
@@ -102,6 +103,7 @@ const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::fortok, "for"},
     {TokenType::consttok, "const"},
     {TokenType::autotok, "auto"},
+    {TokenType::statictok, "static"},
 
     {TokenType::publictok, "public"},
     {TokenType::privatetok, "private"},

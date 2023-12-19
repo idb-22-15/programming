@@ -58,15 +58,10 @@ while
 for
 const
 auto
+static
 
 public
 private
 protected
-
-class Foo() {
-  int a;
-  float b;
-  Foo(int a, float b): a(a), b(b) {};
-};
 
 // comment at the end of file

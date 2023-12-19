@@ -58,6 +58,7 @@ enum struct TokenType {
   fortok,       // for
   consttok,     // const
   autotok,      // auto
+  statictok,     // static
 
   publictok,     // public
   privatetok,    // private

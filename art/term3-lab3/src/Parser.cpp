@@ -211,10 +211,17 @@ class Parser {
   }
 
   VarType parse_var_type() {
+    bool is_static = false;
     bool is_const = false;
     bool is_signed = true;
+    if (this->at().type == TokenType::statictok) {
+      this->eat();
+      is_static = true;
+    }
+
     if (this->at().type == TokenType::consttok) {
       this->eat();
+      is_const = true;
     }
 
     if (this->at().type == TokenType::unsignedtok) {
@@ -235,7 +242,7 @@ class Parser {
               tok.type == TokenType::booltok))
           throw UnexpectedToken(this->at(), "Type cannot be unsigned");
         if (this->at().type == TokenType::ident)
-          return VarType(tok.type, is_const, is_signed);
+          return VarType(tok.type, is_static, is_const, is_signed);
         throw UnexpectedToken(TokenType::ident, this->at());
       }
       default:

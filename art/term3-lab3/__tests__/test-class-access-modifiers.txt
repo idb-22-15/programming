@@ -1,0 +1,14 @@
+class Foo {
+  public:
+  private:
+  protected:
+
+  public:  
+  void f1() {}
+
+  private:
+  void f2() {}
+  
+  protected:
+  void f3() {}
+};

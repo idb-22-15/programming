@@ -2,21 +2,9 @@
 #include <iostream>
 
 #include "./src/Parser.cpp"
+#include "./src/colors.cpp"
 
-enum class Color {
-  red = 31,
-  green = 32,
-  yellow = 33,
-  blue = 34,
-  magenta = 35,
-  cyan = 36
-};
 
-std::string colorized_string(const std::string& str, Color color_code) {
-  std::string new_str =
-      "\033[" + std::to_string(int(color_code)) + "m" + str + "\033[0m";
-  return new_str;
-}
 
 void print_unexpected_token_error(const std::string& input,
                                   const UnexpectedToken& e) {
@@ -41,7 +29,7 @@ void parse_or_print_error(const std::string& input) {
   }
 };
 
-std::string read_file_of_die(const std::string& filename) {
+std::string read_file_or_die(const std::string& filename) {
   std::ifstream file(filename);
   if (!file) {
     std::cerr << "error opening the file" << std::endl;
@@ -60,6 +48,14 @@ int main(int argc, char** argv) {
     parse_or_print_error(
         "class Cat{ bool is_meow = true;  Cat(bool can_meow = true): "
         "is_meow(can_meow) {} };");
+    parse_or_print_error(read_file_or_die("test-empty.txt"));
+    parse_or_print_error(read_file_or_die("test-var-declaration.txt"));
+
+    parse_or_print_error(read_file_or_die("test-class-declaration.txt"));
+    parse_or_print_error(read_file_or_die("test-class-access-modifiers.txt"));
+    parse_or_print_error(read_file_or_die("test-class-invalid-access-modifier.txt"));
+    parse_or_print_error(read_file_or_die("test-class-invalid-constructor-name.txt"));
+    parse_or_print_error(read_file_or_die("test-class-invalid-end.txt"));
 
     while (true) {
       std::cout << "> ";
@@ -70,7 +66,7 @@ int main(int argc, char** argv) {
   }
 
   else if (argc == 2) {
-    std::string file_content = read_file_of_die(argv[1]);
+    std::string file_content = read_file_or_die(argv[1]);
     parse_or_print_error(file_content);
   }
 

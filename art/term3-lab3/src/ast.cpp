@@ -133,10 +133,11 @@ class Declaration : public Statement {};
 class VarType {
  public:
   const TokenType type;
+  const bool is_static = false;
   const bool is_const = false;
   const bool is_signed = true;
-  VarType(TokenType type, bool is_const = false, bool is_signed = true)
-      : type(type), is_const(is_const), is_signed(is_signed) {}
+  VarType(TokenType type, bool is_static = false,  bool is_const = false, bool is_signed = true)
+      : type(type), is_static(is_static), is_const(is_const), is_signed(is_signed) {}
 };
 
 class VarDeclaration : public Declaration {

@@ -1,3 +1,7 @@
+;;;
+// bla bla bla
+
+
 class Cat: public Animal, public IMeowable {
   private:
   unsigned int legs; // this are legs
@@ -21,3 +25,6 @@ class Cat: public Animal, public IMeowable {
 
   class Brain {};
 };
+
+
+;

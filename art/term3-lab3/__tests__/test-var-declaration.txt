@@ -1,0 +1,7 @@
+static const unsigned int a = 10;
+float a = 999;
+double a = 333;
+char a = 'a';
+bool a = true;
+bool a = false;
+
