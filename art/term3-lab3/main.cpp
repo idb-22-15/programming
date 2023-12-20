@@ -1,6 +1,6 @@
-#include "./src/Parser.cpp"
-#include "./src/utils/colors.cpp"
-#include "./src/utils/io.cpp"
+#include "src/Parser.cpp"
+#include "src/utils/colors.cpp"
+#include "src/utils/io.cpp"
 
 void print_unexpected_token_error(const std::string& input,
                                   const UnexpectedToken& e) {
@@ -39,7 +39,7 @@ void print_unexpected_token_error(const std::string& input,
   std::cout << std::endl;
 }
 
-void parse_or_print_error(const std::string& input) {
+void parse_text(const std::string& input) {
   Parser parser;
   try {
     parser.parse(input);
@@ -53,7 +53,12 @@ void parse_or_print_error(const std::string& input) {
 
 void parse_file(const std::string& filename) {
   std::cout << colorized_string("parse ", Color::blue) << filename << ": ";
-  parse_or_print_error(read_file_or_die(filename));
+  try {
+    parse_text(read_file(filename));
+  } catch (const std::exception& e) {
+    std::cout << colorized_string("error", Color::red) << std::endl;
+    std::cerr << e.what() << std::endl;
+  }
 }
 
 void run_tests() {
@@ -63,6 +68,9 @@ void run_tests() {
   parse_file("./__tests__/test-var-declaration-invalid-void.txt");
   parse_file("./__tests__/test-expression.txt");
   parse_file("./__tests__/test-function-declaration.txt");
+  parse_file(
+      "./__tests__/"
+      "test-function-declaration-invalid-args-default-value-order.txt");
 
   parse_file("./__tests__/test-class-constructor-with-init-list.txt");
   parse_file("./__tests__/test-class-destructor.txt");
@@ -73,7 +81,7 @@ void run_tests() {
   parse_file("./__tests__/test-class-invalid-destructor-name.txt");
   parse_file("./__tests__/test-class-invalid-end.txt");
 
-  parse_file("does-not-exits.txt");
+  parse_file("does-not-exit.txt");
 }
 
 void parse_console_input() {
@@ -81,7 +89,7 @@ void parse_console_input() {
     std::cout << "> ";
     std::string input;
     std::getline(std::cin, input);
-    parse_or_print_error(input);
+    parse_text(input);
   }
 }
 

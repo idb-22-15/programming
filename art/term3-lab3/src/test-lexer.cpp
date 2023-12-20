@@ -33,7 +33,7 @@ void print_tokens(std::vector<Token> tokens) {
 
 int main() {
   Lexer lexer;
-  std::string input = read_file_or_die("../__tests__/test-lexer.txt");
+  std::string input = read_file("../__tests__/test-lexer.txt");
   lexer.init(input);
   print_tokens(lexer.tokenize());
 }

@@ -118,58 +118,14 @@ class Parser {
     return ReturnStatement(value);
   }
 
-  Declaration parse_function_declaration(VarType return_type,
-                                         const std::string& identifier) {
-    std::vector<VarDeclaration> params = this->parse_args();
-
-    switch (this->at().type) {
-      case TokenType::semicolon:
-        this->eat();
-        return FunctionDeclaration(return_type, identifier, params,
-                                   std::experimental::nullopt);
-      case TokenType::lsquirly: {
-        std::vector<Statement> body = this->parse_function_body();
-        return FunctionDeclaration(return_type, identifier, params, body);
-      }
-      default:
-        throw UnexpectedToken(this->at(), "Parse function declaration");
-    }
-  }
-
-  std::vector<Statement> parse_function_body() {
-    this->expect(TokenType::lsquirly);
-    std::vector<Statement> body;
-
-    while (this->at().type != TokenType::rsquirly) {
-      body.push_back(this->parse_statement());
-      if (this->eof_or_illegal())
-        throw UnexpectedToken(this->at(), "Parse function body");
-    }
-    this->expect(TokenType::rsquirly);
-    return body;
-  }
-
   Declaration parse_declaration() {
     VarType var_type = this->parse_var_type();
     Token identtok = this->expect(TokenType::ident);
 
     switch (this->at().type) {
-      case TokenType::semicolon: {
-        this->eat();
-        if (var_type.type == TokenType::voidtok)
-          throw UnexpectedToken(identtok, "Variable cannot be of type void");
-        if (var_type.is_const)
-          throw UnexpectedToken(identtok,
-                                "Must assign value to constant expression");
-        return VarDeclaration(var_type, identtok.literal,
-                              std::experimental::nullopt);
-      }
-      case TokenType::eql: {
-        this->eat();
-        Expr value = this->parse_expr();
-        this->expect(TokenType::semicolon);
-        return VarDeclaration(var_type, identtok.literal, value);
-      }
+      case TokenType::semicolon:
+      case TokenType::eql:
+        return this->parse_var_declaration(var_type, identtok);
       case TokenType::lparen:
         return this->parse_function_declaration(var_type, identtok.literal);
       default:
@@ -218,9 +174,92 @@ class Parser {
     }
   }
 
+  VarDeclaration parse_var_declaration(VarType var_type, Token identtok) {
+    switch (this->at().type) {
+      case TokenType::semicolon: {
+        this->eat();
+        if (var_type.type == TokenType::voidtok)
+          throw UnexpectedToken(identtok, "Variable cannot be of type void");
+        if (var_type.is_const)
+          throw UnexpectedToken(identtok,
+                                "Must assign value to constant expression");
+        return VarDeclaration(var_type, identtok.literal,
+                              std::experimental::nullopt);
+      }
+      case TokenType::eql: {
+        this->eat();
+        Expr expr = this->parse_expr();
+        //! FIXME
+        switch (expr.type) {
+          case NodeType::numeric_literal: {
+            if (var_type.type != TokenType::inttok &&
+                var_type.type != TokenType::floattok &&
+                var_type.type != TokenType::doubletok &&
+                var_type.type != TokenType::chartok)
+              throw UnexpectedToken(
+                  this->at(),
+                  "Cannot assing number to variable with such type");
+          }
+          case NodeType::char_literal: {
+            if (var_type.type != TokenType::inttok &&
+                var_type.type != TokenType::chartok)
+              throw UnexpectedToken(
+                  this->at(),
+                  "Cannot assing char literal to variable with such type");
+          }
+          case NodeType::bool_literal: {
+            if (var_type.type != TokenType::booltok)
+              throw UnexpectedToken(this->at(), "Variable must be type bool");
+          }
+          case NodeType::string_literal: {
+            throw UnexpectedToken(this->at(), "Cannot assing string literal");
+          }
+          default:
+            break;
+        }
+
+        this->expect(TokenType::semicolon);
+        return VarDeclaration(var_type, identtok.literal, expr);
+      }
+      default:
+        throw UnexpectedToken(this->at(), "Parse var declaration");
+    }
+  }
+
+  Declaration parse_function_declaration(VarType return_type,
+                                         const std::string& identifier) {
+    std::vector<VarDeclaration> params = this->parse_args();
+
+    switch (this->at().type) {
+      case TokenType::semicolon:
+        this->eat();
+        return FunctionDeclaration(return_type, identifier, params,
+                                   std::experimental::nullopt);
+      case TokenType::lsquirly: {
+        std::vector<Statement> body = this->parse_function_body();
+        return FunctionDeclaration(return_type, identifier, params, body);
+      }
+      default:
+        throw UnexpectedToken(this->at(), "Parse function declaration");
+    }
+  }
+
+  std::vector<Statement> parse_function_body() {
+    this->expect(TokenType::lsquirly);
+    std::vector<Statement> body;
+
+    while (this->at().type != TokenType::rsquirly) {
+      body.push_back(this->parse_statement());
+      if (this->eof_or_illegal())
+        throw UnexpectedToken(this->at(), "Parse function body");
+    }
+    this->expect(TokenType::rsquirly);
+    return body;
+  }
+
   Expr parse_expr() { return this->parse_assignment_expr(); };
 
-  Expr parse_assignment_expr() {
+  AssignmentExpr parse_assignment_expr() {
     Expr left = this->parse_additive_expr();
 
     if (this->at().type == TokenType::eql) {
@@ -232,7 +271,7 @@ class Parser {
     return left;
   }
 
-  Expr parse_additive_expr() {
+  BinaryExpr parse_additive_expr() {
     Expr left = this->parse_multiplicative_expr();
     while (this->at().type == TokenType::plus ||
            this->at().type == TokenType::minus) {
@@ -243,7 +282,7 @@ class Parser {
     return left;
   }
 
-  Expr parse_multiplicative_expr() {
+  BinaryExpr parse_multiplicative_expr() {
     Expr left = this->parse_primary_expr();
     while (this->at().type == TokenType::asteriks ||
            this->at().type == TokenType::slash ||
@@ -296,7 +335,11 @@ class Parser {
     args.push_back(this->parse_args_list_item());
     while (this->at().type == TokenType::comma) {
       this->eat();
-      args.push_back(this->parse_args_list_item());
+      VarDeclaration item = this->parse_args_list_item();
+      if (!item.value && args.back().value)
+        throw UnexpectedToken(this->at(),
+                              "Args with default values must be in front");
+      args.push_back(item);
       if (this->eof_or_illegal())
         throw UnexpectedToken(this->at(), "Parse args list");
     }
@@ -305,15 +348,17 @@ class Parser {
 
   VarDeclaration parse_args_list_item() {
     VarType var_type = this->parse_var_type();
-    Token ident = this->expect(TokenType::ident);
-    //! FIXME =
+    Token identtok = this->expect(TokenType::ident);
+
     if (this->at().type == TokenType::eql) {
       this->eat();
       Expr value = this->parse_expr();
-      return VarDeclaration(var_type, ident.literal, value);
+      return VarDeclaration(var_type, identtok.literal,
+                            std::experimental::make_optional(value));
     }
 
-    return VarDeclaration(var_type, ident.literal, std::experimental::nullopt);
+    return VarDeclaration(var_type, identtok.literal,
+                          std::experimental::nullopt);
   }
 
   ClassDeclaration parse_class_declaration() {

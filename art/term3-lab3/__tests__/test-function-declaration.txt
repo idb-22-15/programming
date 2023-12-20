@@ -8,3 +8,5 @@ int get_one() {
 }
 
 float get_sum(float a, float b);
+
+void with_defaults(int x, bool is = true, char ch = 'a') {}
