@@ -40,7 +40,12 @@ comment
 ~
 ^
 
+return
+static
+const
+auto
 void
+unsigned
 int
 float
 double
@@ -49,16 +54,12 @@ bool
 true
 false
 class
-unsigned
 struct
 if
 else
 do
 while
 for
-const
-auto
-static
 
 public
 private

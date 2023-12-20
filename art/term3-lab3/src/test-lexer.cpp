@@ -1,7 +1,5 @@
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include "../src/Lexer.cpp"
+#include "Lexer.cpp"
+#include "utils/io.cpp"
 
 void println_token_info(Token tok) {
   if (tok.type_printable.length() > 9)
@@ -35,20 +33,7 @@ void print_tokens(std::vector<Token> tokens) {
 
 int main() {
   Lexer lexer;
-
-  std::ifstream file("test-lexer.txt");
-  if (file) {
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string test_string = buffer.str();
-    // std::cout << test_string << std::endl;
-    lexer.init(test_string);
-    print_tokens(lexer.tokenize());
-  } else {
-    std::cerr << "Error opening the file" << std::endl;
-  }
-
-  lexer.init("int a = 5; const float b = 6.6; char* str = \"fggf\"");
-  std::vector<Token> tokens = lexer.tokenize();
-  print_tokens(tokens);
+  std::string input = read_file_or_die("../__tests__/test-lexer.txt");
+  lexer.init(input);
+  print_tokens(lexer.tokenize());
 }

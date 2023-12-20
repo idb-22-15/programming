@@ -43,8 +43,8 @@ class Lexer {
     std::smatch results;
 
     if (std::regex_search(str, results, regex)) {
-      this->cursor += results[0].length();
-      return results[0];
+      this->move_cursor(results[0].length());
+      return std::experimental::make_optional(results[0]);
     };
     return std::experimental::nullopt;
   }
@@ -117,10 +117,11 @@ class Lexer {
           this->input.substr(start_comment, this->cursor - start_comment - 2),
           Position(start_comment, this->cursor - 2, line, col));
     } else if (this->at() == '/') {
+      size_t start_cursor = this->move_cursor();
       size_t line = this->line;
       size_t col = this->col;
       return Token(TokenType::slash, "/",
-                   Position(this->move_cursor(), cursor, line, col));
+                   Position(start_cursor, this->cursor, line, col));
     }
 
     for (auto pair : Token::regex_table) {
@@ -129,10 +130,10 @@ class Lexer {
       size_t start_cursor = this->cursor;
       size_t line = this->line;
       size_t col = this->col;
-      auto result = this->match(this->input.substr(this->cursor), regex);
+      std::experimental::optional<std::string> result =
+          this->match(this->input.substr(this->cursor), regex);
       if (!result)
         continue;
-
       if (token_type == TokenType::ident) {
         auto it = Token::reserved_idents.find(result.value());
         if (it != Token::reserved_idents.end())

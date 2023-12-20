@@ -23,26 +23,35 @@ struct Token {
   static const std::map<TokenType, std::string> token_types_printable;
   static const std::map<TokenType, std::regex> regex_table;
 
-  Token(TokenType type, std::string literal, Position position)
-      : position(position) {
-    this->type = type;
+  Token(TokenType type, const std::string& literal, Position position)
+      : type(type), literal(literal), position(position) {
     this->type_printable = Token::token_types_printable.at(type);
-    this->literal = literal;
   }
 };
 
 const std::map<std::string, TokenType> Token::reserved_idents{
-    {"return", TokenType::returntok},   {"void", TokenType::voidtok},
-    {"int", TokenType::inttok},         {"float", TokenType::floattok},
-    {"double", TokenType::doubletok},   {"char", TokenType::chartok},
-    {"bool", TokenType::booltok},       {"true", TokenType::truetok},
-    {"false", TokenType::falsetok},     {"unsigned", TokenType::unsignedtok},
-    {"class", TokenType::classtok},     {"struct", TokenType::structtok},
-    {"if", TokenType::iftok},           {"else", TokenType::elsetok},
-    {"do", TokenType::dotok},           {"while", TokenType::whiletok},
-    {"for", TokenType::fortok},         {"const", TokenType::consttok},
-    {"auto", TokenType::autotok},       {"static", TokenType::statictok},
-    {"public", TokenType::publictok},   {"private", TokenType::privatetok},
+    {"return", TokenType::returntok},
+    {"static", TokenType::statictok},
+    {"const", TokenType::consttok},
+    {"auto", TokenType::autotok},
+    {"void", TokenType::voidtok},
+    {"unsigned", TokenType::unsignedtok},
+    {"int", TokenType::inttok},
+    {"float", TokenType::floattok},
+    {"double", TokenType::doubletok},
+    {"char", TokenType::chartok},
+    {"bool", TokenType::booltok},
+    {"true", TokenType::truetok},
+    {"false", TokenType::falsetok},
+    {"class", TokenType::classtok},
+    {"struct", TokenType::structtok},
+    {"if", TokenType::iftok},
+    {"else", TokenType::elsetok},
+    {"do", TokenType::dotok},
+    {"while", TokenType::whiletok},
+    {"for", TokenType::fortok},
+    {"public", TokenType::publictok},
+    {"private", TokenType::privatetok},
     {"protected", TokenType::protectedtok}};
 
 const std::map<TokenType, std::string> Token::token_types_printable{
@@ -85,7 +94,11 @@ const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::bitxor, "bitxor"},
 
     {TokenType::returntok, "return"},
+    {TokenType::statictok, "static"},
+    {TokenType::consttok, "const"},
+    {TokenType::autotok, "auto"},
     {TokenType::voidtok, "void"},
+    {TokenType::unsignedtok, "unsigned"},
     {TokenType::inttok, "int"},
     {TokenType::floattok, "float"},
     {TokenType::doubletok, "double"},
@@ -93,7 +106,6 @@ const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::booltok, "bool"},
     {TokenType::truetok, "true"},
     {TokenType::falsetok, "false"},
-    {TokenType::unsignedtok, "unsigned"},
     {TokenType::classtok, "class"},
     {TokenType::structtok, "struct"},
     {TokenType::iftok, "if"},
@@ -101,9 +113,6 @@ const std::map<TokenType, std::string> Token::token_types_printable{
     {TokenType::dotok, "do"},
     {TokenType::whiletok, "while"},
     {TokenType::fortok, "for"},
-    {TokenType::consttok, "const"},
-    {TokenType::autotok, "auto"},
-    {TokenType::statictok, "static"},
 
     {TokenType::publictok, "public"},
     {TokenType::privatetok, "private"},

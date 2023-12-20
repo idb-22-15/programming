@@ -1,0 +1,5 @@
+class Foo {
+  Foo(int a, int a): a(a), b(a), c(d) {
+      
+  }
+};

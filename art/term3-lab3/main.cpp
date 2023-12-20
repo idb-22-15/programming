@@ -1,19 +1,40 @@
-#include <fstream>
-#include <iostream>
-
 #include "./src/Parser.cpp"
-#include "./src/colors.cpp"
-
-
+#include "./src/utils/colors.cpp"
+#include "./src/utils/io.cpp"
 
 void print_unexpected_token_error(const std::string& input,
                                   const UnexpectedToken& e) {
   Token tok = e.received;
+  size_t lines_between_error = 2;
+  size_t start_line = tok.position.line <= lines_between_error
+                          ? 1
+                          : tok.position.line - lines_between_error;
+  size_t end_line = tok.position.line + lines_between_error;
+
+  bool is_line_start = true;
+  size_t current_line = 1;
   for (size_t i = 0; i < input.length(); i++) {
-    if (i >= tok.position.start && i < tok.position.end)
-      std::cout << colorized_string(input.substr(i, 1), Color::red);
-    else
-      std::cout << colorized_string(input.substr(i, 1), Color::yellow);
+    bool is_between = current_line >= start_line && current_line <= end_line;
+    bool is_error_line = current_line == tok.position.line;
+    if (is_between) {
+      if (is_line_start) {
+        if (is_error_line)
+          std::cout << std::to_string(tok.position.line) << "\t| ";
+        else
+          std::cout << "\t| ";
+      }
+
+      if (i >= tok.position.start && i < tok.position.end)
+        std::cout << colorized_string(input.substr(i, 1), Color::red);
+      else
+        std::cout << colorized_string(input.substr(i, 1), Color::yellow);
+    }
+
+    is_line_start = false;
+    if (input[i] == '\n') {
+      current_line++;
+      is_line_start = true;
+    }
   }
   std::cout << std::endl;
 }
@@ -22,56 +43,60 @@ void parse_or_print_error(const std::string& input) {
   Parser parser;
   try {
     parser.parse(input);
-    std::cout << "ok" << std::endl;
+    std::cout << colorized_string("ok", Color::green) << std::endl;
   } catch (const UnexpectedToken& e) {
+    std::cout << colorized_string("error", Color::red) << std::endl;
     std::cerr << e.what() << std::endl;
     print_unexpected_token_error(input, e);
   }
 };
 
-std::string read_file_or_die(const std::string& filename) {
-  std::ifstream file(filename);
-  if (!file) {
-    std::cerr << "error opening the file" << std::endl;
-    exit(1);
+void parse_file(const std::string& filename) {
+  std::cout << colorized_string("parse ", Color::blue) << filename << ": ";
+  parse_or_print_error(read_file_or_die(filename));
+}
+
+void run_tests() {
+  parse_file("./__tests__/test-empty.txt");
+  parse_file("./__tests__/test-var-declaration.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-const.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-void.txt");
+  parse_file("./__tests__/test-expression.txt");
+  parse_file("./__tests__/test-function-declaration.txt");
+
+  parse_file("./__tests__/test-class-constructor-with-init-list.txt");
+  parse_file("./__tests__/test-class-destructor.txt");
+  parse_file("./__tests__/test-class-declaration.txt");
+  parse_file("./__tests__/test-class-access-modifiers.txt");
+  parse_file("./__tests__/test-class-invalid-access-modifier.txt");
+  parse_file("./__tests__/test-class-invalid-constructor-name.txt");
+  parse_file("./__tests__/test-class-invalid-destructor-name.txt");
+  parse_file("./__tests__/test-class-invalid-end.txt");
+
+  parse_file("does-not-exits.txt");
+}
+
+void parse_console_input() {
+  while (true) {
+    std::cout << "> ";
+    std::string input;
+    std::getline(std::cin, input);
+    parse_or_print_error(input);
   }
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  std::string file_content = buffer.str();
-  return file_content;
 }
 
 int main(int argc, char** argv) {
   if (argc == 1) {
-    parse_or_print_error("int x = 5;");
-    parse_or_print_error("int abs(float c, bool y){};");
-    parse_or_print_error(
-        "class Cat{ bool is_meow = true;  Cat(bool can_meow = true): "
-        "is_meow(can_meow) {} };");
-    parse_or_print_error(read_file_or_die("test-empty.txt"));
-    parse_or_print_error(read_file_or_die("test-var-declaration.txt"));
-
-    parse_or_print_error(read_file_or_die("test-class-declaration.txt"));
-    parse_or_print_error(read_file_or_die("test-class-access-modifiers.txt"));
-    parse_or_print_error(read_file_or_die("test-class-invalid-access-modifier.txt"));
-    parse_or_print_error(read_file_or_die("test-class-invalid-constructor-name.txt"));
-    parse_or_print_error(read_file_or_die("test-class-invalid-end.txt"));
-
-    while (true) {
-      std::cout << "> ";
-      std::string input;
-      std::getline(std::cin, input);
-      parse_or_print_error(input);
-    }
+    run_tests();
+    parse_console_input();
   }
 
   else if (argc == 2) {
-    std::string file_content = read_file_or_die(argv[1]);
-    parse_or_print_error(file_content);
+    parse_file(argv[1]);
   }
 
   else if (argc > 2) {
-    std::cout << "usage: <filename>";
+    std::cout << "usage: <filename>" << std::endl;
     exit(1);
   }
 }

@@ -40,7 +40,11 @@ enum struct TokenType {
   bitxor,     // ^
 
   returntok,    // return
+  statictok,    // static
+  consttok,     // const
+  autotok,      // auto
   voidtok,      // void
+  unsignedtok,  // unsigned
   inttok,       // int
   floattok,     // float
   doubletok,    // double
@@ -48,7 +52,6 @@ enum struct TokenType {
   booltok,      // bool
   truetok,      // true
   falsetok,     // false
-  unsignedtok,  // unsigned
   classtok,     // class
   structtok,    // struct
   iftok,        // if
@@ -56,9 +59,6 @@ enum struct TokenType {
   dotok,        // do
   whiletok,     // while
   fortok,       // for
-  consttok,     // const
-  autotok,      // auto
-  statictok,     // static
 
   publictok,     // public
   privatetok,    // private
