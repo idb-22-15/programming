@@ -32,7 +32,7 @@ class UnexpectedToken : public std::exception {
     this->message +=
         "Expected type: " + Token::token_types_printable.at(expected) +
         "; received: `" +
-        colorized_string(this->received.type_printable, Color::cyan) + "`";
+        colorized_string(this->received.literal, Color::cyan) + "`";
   }
 
   virtual const char* what() const throw() { return this->message.c_str(); }
