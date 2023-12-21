@@ -63,15 +63,18 @@ void parse_file(const std::string& filename) {
 
 void run_tests() {
   parse_file("./__tests__/test-empty.txt");
+
   parse_file("./__tests__/test-var-declaration.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-literal-number.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-literal-char.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-literal-bool.txt");
+  parse_file("./__tests__/test-var-declaration-invalid-literal-string.txt");
   parse_file("./__tests__/test-var-declaration-invalid-const.txt");
   parse_file("./__tests__/test-var-declaration-invalid-void.txt");
   parse_file("./__tests__/test-expression.txt");
   parse_file("./__tests__/test-function-declaration.txt");
   parse_file(
-      "./__tests__/"
-      "test-function-declaration-invalid-args-default-value-order.txt");
-
+      "./__tests__/test-function-declaration-invalid-default-args-order.txt");
   parse_file("./__tests__/test-class-constructor-with-init-list.txt");
   parse_file("./__tests__/test-class-destructor.txt");
   parse_file("./__tests__/test-class-declaration.txt");

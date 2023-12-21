@@ -4,4 +4,3 @@ double a = 333;
 char a = 'a';
 bool a = true;
 bool a = false;
-

@@ -1,0 +1,3 @@
+char a = 'a';
+char a = 1;
+char a = true;

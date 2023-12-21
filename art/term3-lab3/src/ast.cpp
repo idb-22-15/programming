@@ -8,6 +8,7 @@
 
 enum class NodeType {
   // statements
+  statement,
   program,
   block_statement,
   return_statement,
@@ -18,6 +19,7 @@ enum class NodeType {
   class_declaration,
 
   // expressions
+  expr,
   binary_expr,
   assignment_expr,
 
@@ -31,7 +33,7 @@ enum class NodeType {
 
 class Statement {
  public:
-  NodeType type;
+  NodeType type = NodeType::statement;
   static const std::map<NodeType, std::string> node_types_table_printable;
 };
 
@@ -60,7 +62,11 @@ class Program : public Statement {
   Program(std::vector<Statement> body) : body(body){};
 };
 
-class Expr : public Statement {};
+class Expr : public Statement {
+ public:
+  NodeType type = NodeType::expr;
+  virtual ~Expr() = default;
+};
 
 class BlockStatement : public Statement {
  public:
@@ -72,25 +78,25 @@ class BlockStatement : public Statement {
 class ReturnStatement : public Statement {
  public:
   const NodeType type = NodeType::return_statement;
-  const Expr value;
-  ReturnStatement(Expr value) : value(value) {}
+  const Expr* value;
+  ReturnStatement(Expr* value) : value(value) {}
 };
 class BinaryExpr : public Expr {
  public:
   const NodeType type = NodeType::binary_expr;
-  const Expr left;
-  const Expr right;
+  const Expr* left;
+  const Expr* right;
   const TokenType op;
-  BinaryExpr(Expr left, Expr right, TokenType op)
+  BinaryExpr(Expr* left, Expr* right, TokenType op)
       : left(left), right(right), op(op) {}
 };
 
 class AssignmentExpr : public Expr {
  public:
   const NodeType type = NodeType::assignment_expr;
-  const Expr assigne;
-  const Expr value;
-  AssignmentExpr(Expr assigne, Expr value) : assigne(assigne), value(value) {}
+  const Expr* assigne;
+  const Expr* value;
+  AssignmentExpr(Expr* assigne, Expr* value) : assigne(assigne), value(value) {}
 };
 
 class Identifier : public Expr {
@@ -151,10 +157,10 @@ class VarDeclaration : public Declaration {
   const NodeType type = NodeType::var_declaration;
   const VarType var_type;
   const std::string identifier;
-  const std::experimental::optional<Expr> value;
+  const std::experimental::optional<Expr*> value;
   VarDeclaration(VarType var_type,
                  std::string identifier,
-                 std::experimental::optional<Expr> value)
+                 std::experimental::optional<Expr*> value)
       : var_type(var_type), identifier(identifier), value(value) {}
 };
 

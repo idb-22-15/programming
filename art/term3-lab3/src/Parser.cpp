@@ -3,6 +3,7 @@
 #include <experimental/optional>
 #include <map>
 #include <string>
+#include <typeinfo>
 #include "Lexer.cpp"
 #include "UnexpectedToken.cpp"
 #include "ast.cpp"
@@ -93,9 +94,9 @@ class Parser {
         return Statement();
       }
       default:
-        Expr value = this->parse_expr();
+        Expr* value = this->parse_expr();
         this->expect(TokenType::semicolon);
-        return value;
+        return *value;
     };
   }
 
@@ -113,7 +114,7 @@ class Parser {
 
   ReturnStatement parse_return_statement() {
     this->expect(TokenType::returntok);
-    Expr value = this->parse_expr();
+    Expr* value = this->parse_expr();
     this->expect(TokenType::semicolon);
     return ReturnStatement(value);
   }
@@ -188,34 +189,39 @@ class Parser {
       }
       case TokenType::eql: {
         this->eat();
-        Expr expr = this->parse_expr();
+        Expr* expr = this->parse_expr();
         //! FIXME
-        switch (expr.type) {
-          case NodeType::numeric_literal: {
-            if (var_type.type != TokenType::inttok &&
-                var_type.type != TokenType::floattok &&
-                var_type.type != TokenType::doubletok &&
-                var_type.type != TokenType::chartok)
-              throw UnexpectedToken(
-                  this->at(),
-                  "Cannot assing number to variable with such type");
-          }
-          case NodeType::char_literal: {
-            if (var_type.type != TokenType::inttok &&
-                var_type.type != TokenType::chartok)
-              throw UnexpectedToken(
-                  this->at(),
-                  "Cannot assing char literal to variable with such type");
-          }
-          case NodeType::bool_literal: {
-            if (var_type.type != TokenType::booltok)
-              throw UnexpectedToken(this->at(), "Variable must be type bool");
-          }
-          case NodeType::string_literal: {
-            throw UnexpectedToken(this->at(), "Cannot assing string literal");
-          }
-          default:
-            break;
+        NumericLiteral* numeric_literal = dynamic_cast<NumericLiteral*>(expr);
+        if (numeric_literal) {
+          if (var_type.type != TokenType::inttok &&
+              var_type.type != TokenType::floattok &&
+              var_type.type != TokenType::doubletok &&
+              var_type.type != TokenType::chartok)
+            throw UnexpectedToken(
+                this->at(), "Cannot assing number to variable with such type");
+        }
+
+        CharLiteral* char_literal = dynamic_cast<CharLiteral*>(expr);
+        if (char_literal) {
+          if (var_type.type != TokenType::inttok &&
+              var_type.type != TokenType::chartok)
+            throw UnexpectedToken(
+                this->at(),
+                "Cannot assing char literal to variable with such type");
+        }
+
+        BoolLiteral* bool_literal = dynamic_cast<BoolLiteral*>(expr);
+        if (bool_literal) {
+          if (var_type.type != TokenType::booltok)
+            throw UnexpectedToken(
+                this->at(), "Cannot assing bool to variable with such type");
+        }
+
+        StringLiteral* string_literal = dynamic_cast<StringLiteral*>(expr);
+        if (string_literal) {
+          throw UnexpectedToken(
+              this->at(),
+              "Cannot assing string literal to variable with such type");
         }
 
         this->expect(TokenType::semicolon);
@@ -257,62 +263,63 @@ class Parser {
     return body;
   }
 
-  Expr parse_expr() { return this->parse_assignment_expr(); };
+  Expr* parse_expr() { return this->parse_assignment_expr(); };
 
-  AssignmentExpr parse_assignment_expr() {
-    Expr left = this->parse_additive_expr();
+  Expr* parse_assignment_expr() {
+    Expr* left = this->parse_additive_expr();
 
     if (this->at().type == TokenType::eql) {
       this->eat();
-      Expr value = this->parse_assignment_expr();
-      return AssignmentExpr(left, value);
+      Expr* value = this->parse_assignment_expr();
+      return new AssignmentExpr(left, value);
     }
 
     return left;
   }
 
-  BinaryExpr parse_additive_expr() {
-    Expr left = this->parse_multiplicative_expr();
+  Expr* parse_additive_expr() {
+    Expr* left = this->parse_multiplicative_expr();
     while (this->at().type == TokenType::plus ||
            this->at().type == TokenType::minus) {
       TokenType op = this->eat().type;
-      Expr right = this->parse_multiplicative_expr();
-      left = BinaryExpr(left, right, op);
+      Expr* right = this->parse_multiplicative_expr();
+      left = new BinaryExpr(left, right, op);
     }
     return left;
   }
 
-  BinaryExpr parse_multiplicative_expr() {
-    Expr left = this->parse_primary_expr();
+  Expr* parse_multiplicative_expr() {
+    Expr* left = this->parse_primary_expr();
     while (this->at().type == TokenType::asteriks ||
            this->at().type == TokenType::slash ||
            this->at().type == TokenType::persent) {
       TokenType op = this->eat().type;
-      Expr right = this->parse_primary_expr();
-      left = BinaryExpr(left, right, op);
+      Expr* right = this->parse_primary_expr();
+      left = new BinaryExpr(left, right, op);
     }
     return left;
   }
 
-  Expr parse_primary_expr() {
+  Expr* parse_primary_expr() {
     Token tok = this->eat();
     switch (tok.type) {
       case TokenType::ident:
-        return Identifier(tok.literal);
+        return new Identifier(tok.literal);
       case TokenType::number:
-        return NumericLiteral(std::stod(tok.literal));
+        return new NumericLiteral(std::stod(tok.literal));
       case TokenType::charlit:
-        return CharLiteral(tok.literal.at(1));
+        return new CharLiteral(tok.literal.at(1));
       case TokenType::truetok:
       case TokenType::falsetok: {
         bool value = tok.type == TokenType::truetok ? true : false;
-        return BoolLiteral(value);
+        return new BoolLiteral(value);
       }
       case TokenType::string: {
-        return StringLiteral(tok.literal.substr(1, tok.literal.length() - 2));
+        return new StringLiteral(
+            tok.literal.substr(1, tok.literal.length() - 2));
       }
       case TokenType::lparen: {
-        Expr value = this->parse_expr();
+        Expr* value = this->parse_expr();
         this->expect(TokenType::rparen);
         return value;
       }
@@ -352,7 +359,7 @@ class Parser {
 
     if (this->at().type == TokenType::eql) {
       this->eat();
-      Expr value = this->parse_expr();
+      Expr* value = this->parse_expr();
       return VarDeclaration(var_type, identtok.literal,
                             std::experimental::make_optional(value));
     }
