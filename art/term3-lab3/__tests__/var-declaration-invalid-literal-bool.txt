@@ -1,0 +1,5 @@
+bool a = true;
+bool a = false;
+bool a = 1;
+bool a = 'a';
+bool a = "string";

@@ -1,5 +1,5 @@
 static const unsigned int a = 10;
-float a = 999;
+float a = 999.99;
 double a = 333;
 char a = 'a';
 bool a = true;

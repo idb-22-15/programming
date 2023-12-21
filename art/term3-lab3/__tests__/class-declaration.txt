@@ -1,0 +1,36 @@
+;
+;
+;
+// bla bla bla
+
+class Cat : public Animal, public IMeowable {
+ private:
+  unsigned int legs;  // this are legs
+
+ public:
+  int color; /* this is color
+                  it can be:
+                    - black = 1
+                    - white = 2
+                    - gray = 3
+  */
+  const int id = 999;
+
+ protected:
+  const bool can_fly = false;
+
+ public:
+  Cat(int count_legs = 4) : legs(count_legs) {}
+
+  void meow() { int meow_type = 5 / 2 * 7; }
+
+  int get_id() { return 4; }
+
+  bool is_black();
+
+  ~Cat() {}
+
+  class Brain {};
+};
+
+;
