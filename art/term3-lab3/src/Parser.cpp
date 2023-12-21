@@ -7,20 +7,29 @@
 #include "Lexer.cpp"
 #include "UnexpectedToken.cpp"
 #include "ast.cpp"
+#include "utils/io.cpp"
+
 class Parser {
  private:
   std::vector<Token> tokens;
   Lexer lexer;
 
  public:
-  Program parse(std::string input) {
+  Program parse(const std::string& input,
+                std::vector<UnexpectedToken>& errors) {
     this->lexer.init(input);
     this->tokens = this->lexer.tokenize();
 
     std::vector<Statement> body;
+
     while (!this->eof()) {
-      body.push_back(this->parse_statement());
+      try {
+        body.push_back(this->parse_statement());
+      } catch (const UnexpectedToken& e) {
+        errors.push_back(e);
+      }
     }
+
     return Program(body);
   }
 
@@ -188,9 +197,9 @@ class Parser {
                               std::experimental::nullopt);
       }
       case TokenType::eql: {
-        this->eat();
+        Token eqltok = this->eat();
         Expr* expr = this->parse_expr();
-        //! FIXME
+
         NumericLiteral* numeric_literal = dynamic_cast<NumericLiteral*>(expr);
         if (numeric_literal) {
           if (var_type.type != TokenType::inttok &&
@@ -198,7 +207,7 @@ class Parser {
               var_type.type != TokenType::doubletok &&
               var_type.type != TokenType::chartok)
             throw UnexpectedToken(
-                this->at(), "Cannot assing number to variable with such type");
+                eqltok, "Cannot assing number to variable with such type");
         }
 
         CharLiteral* char_literal = dynamic_cast<CharLiteral*>(expr);
@@ -206,7 +215,7 @@ class Parser {
           if (var_type.type != TokenType::inttok &&
               var_type.type != TokenType::chartok)
             throw UnexpectedToken(
-                this->at(),
+                eqltok,
                 "Cannot assing char literal to variable with such type");
         }
 
@@ -214,13 +223,13 @@ class Parser {
         if (bool_literal) {
           if (var_type.type != TokenType::booltok)
             throw UnexpectedToken(
-                this->at(), "Cannot assing bool to variable with such type");
+                eqltok, "Cannot assing bool to variable with such type");
         }
 
         StringLiteral* string_literal = dynamic_cast<StringLiteral*>(expr);
         if (string_literal) {
           throw UnexpectedToken(
-              this->at(),
+              eqltok,
               "Cannot assing string literal to variable with such type");
         }
 

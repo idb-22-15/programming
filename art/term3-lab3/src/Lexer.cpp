@@ -13,9 +13,11 @@ class Lexer {
   size_t col = 1;
 
  public:
-  void init(std::string& input) {
+  void init(const std::string& input) {
     this->input = input;
     this->cursor = 0;
+    this->line = 1;
+    this->col = 1;
   }
 
   std::vector<Token> tokenize() {
@@ -27,9 +29,10 @@ class Lexer {
       tok = this->next();
       tokens.push_back(tok);
     }
+
     std::vector<Token> filtered_tokens;
     std::copy_if(tokens.begin(), tokens.end(),
-                 std::back_inserter(filtered_tokens), [](Token tok) {
+                 std::back_inserter(filtered_tokens), [](const Token& tok) {
                    return !(tok.type == TokenType::linecomm ||
                             tok.type == TokenType::longcomm);
                  });
@@ -63,7 +66,7 @@ class Lexer {
   void skip_whitespace() {
     while (isspace(this->at()) && this->has_more_tokens()) {
       if (this->at() == '\n') {
-        this->col = -1;
+        this->col = 0;
         this->line++;
       }
       this->move_cursor();
