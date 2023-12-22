@@ -166,6 +166,15 @@ class Lexer {
           return Token(TokenType::linecomment, comment, pos);
         }
       }
+      case ':': {
+        if (this->ch_after() == ':') {
+          size_t start = this->pos;
+          this->eat();
+          this->eat();
+          size_t end = this->pos;
+          return Token(TokenType::doublecolon, "::", Position(start, end));
+        }
+      }
       case '\0': {
         Position pos(this->pos, this->pos);
         this->eat();
@@ -222,7 +231,9 @@ int main() {
       "// comment \n"
       "/* long \n"
       "comment */ \n"
-      "class Foo { void ha() {}};");
+      "class Foo { void ha() {}};\n\n"
+
+      "Foo::bar() {}");
 
   for (auto token : tokens) {
     token.print();
