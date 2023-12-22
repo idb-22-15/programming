@@ -12,6 +12,7 @@ enum class NodeType {
   program,
   block_statement,
   return_statement,
+  if_statement,
 
   // declarations
   var_declaration,
@@ -89,6 +90,16 @@ class BinaryExpr : public Expr {
   const TokenType op;
   BinaryExpr(Expr* left, Expr* right, TokenType op)
       : left(left), right(right), op(op) {}
+};
+
+class IfStatement : public Statement {
+ public:
+  const NodeType type = NodeType::if_statement;
+  const Expr* condition;
+  const Statement* body;
+  const Statement* else_body;
+  IfStatement(Expr* condition, Statement* body, Statement* else_body)
+      : condition(condition), body(body), else_body(else_body) {}
 };
 
 class AssignmentExpr : public Expr {

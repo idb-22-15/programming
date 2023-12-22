@@ -1,0 +1,10 @@
+union Buffer {
+ private:
+  int number;
+  char ch;
+
+ public:
+  int get_number() {
+    return number;
+  }
+}

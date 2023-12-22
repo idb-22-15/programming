@@ -93,9 +93,12 @@ class Parser {
         return this->parse_declaration();
       case TokenType::classtok:
       case TokenType::structtok:
+      case TokenType::uniontok:
         return this->parse_class_declaration();
       case TokenType::lsquirly:
         return this->parse_block_statement();
+      case TokenType::iftok:
+        return this->parse_if_statement();
       case TokenType::returntok:
         return this->parse_return_statement();
       case TokenType::semicolon: {
@@ -241,8 +244,9 @@ class Parser {
     }
   }
 
-  Declaration parse_function_declaration(VarType return_type,
-                                         const std::string& identifier) {
+  FunctionDeclaration parse_function_declaration(
+      VarType return_type,
+      const std::string& identifier) {
     std::vector<VarDeclaration> params = this->parse_args();
 
     switch (this->at().type) {
@@ -378,7 +382,8 @@ class Parser {
   }
 
   ClassDeclaration parse_class_declaration() {
-    Token classtok = this->expect(TokenType::classtok, TokenType::structtok);
+    Token classtok = this->expect(TokenType::classtok, TokenType::structtok,
+                                  TokenType::uniontok);
     Token ident = this->expect(TokenType::ident);
     std::vector<ClassParent> parents = this->parse_class_parents_list();
 
@@ -392,13 +397,13 @@ class Parser {
       switch (this->at().type) {
         case TokenType::ident: {
           FunctionDeclaration constructor =
-              this->parse_constructor(ident.literal);
+              this->parse_class_constructor(ident.literal);
           items.push_back(ClassItem(current_mode, constructor));
           break;
         }
         case TokenType::bitnot: {
           FunctionDeclaration destructor =
-              this->parse_dectructor(ident.literal);
+              this->parse_class_dectructor(ident.literal);
           items.push_back(ClassItem(current_mode, destructor));
           break;
         }
@@ -409,7 +414,8 @@ class Parser {
           break;
         }
         case TokenType::classtok:
-        case TokenType::structtok: {
+        case TokenType::structtok:
+        case TokenType::uniontok: {
           Declaration class_declaration = this->parse_class_declaration();
           items.push_back(ClassItem(current_mode, class_declaration));
           break;
@@ -463,19 +469,19 @@ class Parser {
     return current_mode;
   }
 
-  FunctionDeclaration parse_constructor(const std::string& class_ident) {
+  FunctionDeclaration parse_class_constructor(const std::string& class_ident) {
     Token identtok = this->expect(TokenType::ident);
     if (identtok.literal != class_ident)
       throw UnexpectedToken(identtok, "Wrong constructor name");
     std::vector<VarDeclaration> args = this->parse_args();
     if (this->at().type == TokenType::colon)
-      this->parse_constructor_init_list();
+      this->parse_class_constructor_init_list();
     std::vector<Statement> body = this->parse_function_body();
     return FunctionDeclaration(VarType(TokenType::voidtok), identtok.literal,
                                args, body);
   }
 
-  void parse_constructor_init_list() {
+  void parse_class_constructor_init_list() {
     this->expect(TokenType::colon);
     while (this->at().type != TokenType::lsquirly) {
       this->expect(TokenType::ident);
@@ -486,11 +492,11 @@ class Parser {
       if (this->at().type == TokenType::comma)
         this->eat();
       if (this->eof_or_illegal())
-        throw UnexpectedToken(this->at(), "Parse constructor init list");
+        throw UnexpectedToken(TokenType::lsquirly, this->at());
     }
   }
 
-  FunctionDeclaration parse_dectructor(const std::string& class_ident) {
+  FunctionDeclaration parse_class_dectructor(const std::string& class_ident) {
     this->expect(TokenType::bitnot);
     Token identtok = this->expect(TokenType::ident);
     if (identtok.literal != class_ident)
@@ -500,5 +506,20 @@ class Parser {
     std::vector<Statement> body = this->parse_function_body();
     return FunctionDeclaration(TokenType::voidtok, class_ident,
                                std::vector<VarDeclaration>(), body);
+  }
+
+  Statement parse_if_statement() {
+    this->expect(TokenType::iftok);
+    this->expect(TokenType::lparen);
+    this->parse_expr();
+    this->expect(TokenType::rparen);
+
+    this->parse_statement();
+    if (this->at().type == TokenType::elsetok) {
+      this->eat();
+      this->parse_statement();
+    }
+
+    return Statement();
   }
 };

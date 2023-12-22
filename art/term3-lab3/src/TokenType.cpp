@@ -54,6 +54,7 @@ enum struct TokenType {
   falsetok,     // false
   classtok,     // class
   structtok,    // struct
+  uniontok,     // union
   iftok,        // if
   elsetok,      // else
   dotok,        // do

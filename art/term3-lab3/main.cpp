@@ -3,6 +3,8 @@
 void run_tests() {
   ParserIO::parse_file("./__tests__/empty.txt");
 
+  ParserIO::parse_file("./__tests__/if-statement.txt");
+
   ParserIO::parse_file("./__tests__/var-declaration.txt");
   ParserIO::parse_file(
       "./__tests__/var-declaration-invalid-literal-number.txt");
@@ -18,6 +20,8 @@ void run_tests() {
   ParserIO::parse_file("./__tests__/expression.txt");
 
   ParserIO::parse_file("./__tests__/class-declaration.txt");
+  ParserIO::parse_file("./__tests__/class-declaration-struct.txt");
+  ParserIO::parse_file("./__tests__/class-declaration-union.txt");
   ParserIO::parse_file("./__tests__/class-constructor-with-init-list.txt");
   ParserIO::parse_file("./__tests__/class-destructor.txt");
   ParserIO::parse_file("./__tests__/class-access-modifiers.txt");
@@ -30,7 +34,6 @@ void run_tests() {
 }
 
 int main(int argc, char** argv) {
-  Parser parser;
   if (argc == 1) {
     run_tests();
     ParserIO::parse_console_input();

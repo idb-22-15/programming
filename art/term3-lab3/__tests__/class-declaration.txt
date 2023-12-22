@@ -5,7 +5,7 @@
 
 class Cat : public Animal, public IMeowable {
  private:
-  unsigned int legs;  // this are legs
+  static unsigned int legs = 4;  // this are legs
 
  public:
   int color; /* this is color
@@ -30,7 +30,11 @@ class Cat : public Animal, public IMeowable {
 
   ~Cat() {}
 
-  class Brain {};
+  class Brain {
+   public:
+    int get_brain();
+  };
 };
 
 ;
+/* wow */

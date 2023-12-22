@@ -1,0 +1,9 @@
+
+if (a) {
+
+} else b;
+
+if (a) a;
+else {
+  b;
+}
