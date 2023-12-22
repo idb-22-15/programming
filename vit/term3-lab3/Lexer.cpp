@@ -67,9 +67,11 @@ class Lexer {
     this->pos = 0;
 
     std::vector<Token> tokens;
+    Token token = this->next_token();
+    tokens.push_back(token);
 
-    while (!this->eof()) {
-      Token token = this->next_token();
+    while (token.type != TokenType::eof) {
+      token = this->next_token();
       token.print();
       tokens.push_back(token);
     }
@@ -78,12 +80,7 @@ class Lexer {
 
  private:
   bool eof() { return this->pos >= this->input.length(); }
-  char ch() {
-    if (!this->eof())
-      return this->input[this->pos];
-    else
-      return '\0';
-  }
+  char ch() { return this->input[this->pos]; }
 
   char ch_after() {
     if (!this->eof())
@@ -226,4 +223,8 @@ int main() {
       "/* long \n"
       "comment */ \n"
       "class Foo { void ha() {}};");
+
+  for (auto token : tokens) {
+    token.print();
+  }
 }
