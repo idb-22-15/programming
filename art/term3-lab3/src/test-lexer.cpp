@@ -23,14 +23,6 @@ void print_tokens(std::vector<Token> tokens) {
   }
 }
 
-// void print_tokens_by_next(Lexer lexer) {
-//   Token tok = lexer.next();
-//   while (tok.type != TokenType::eof) {
-//     println_token_info(tok);
-//     tok = lexer.next();
-//   }
-// }
-
 int main() {
   Lexer lexer;
   std::string input = read_file("../__tests__/@test-lexer.txt");

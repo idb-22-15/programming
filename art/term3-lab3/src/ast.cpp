@@ -81,6 +81,7 @@ class ReturnStatement : public Statement {
   const NodeType type = NodeType::return_statement;
   const Expr* value;
   ReturnStatement(Expr* value) : value(value) {}
+  ~ReturnStatement() { delete value; }
 };
 class BinaryExpr : public Expr {
  public:
@@ -90,6 +91,10 @@ class BinaryExpr : public Expr {
   const TokenType op;
   BinaryExpr(Expr* left, Expr* right, TokenType op)
       : left(left), right(right), op(op) {}
+  ~BinaryExpr() {
+    delete left;
+    delete right;
+  }
 };
 
 class IfStatement : public Statement {
@@ -100,6 +105,11 @@ class IfStatement : public Statement {
   const Statement* else_body;
   IfStatement(Expr* condition, Statement* body, Statement* else_body)
       : condition(condition), body(body), else_body(else_body) {}
+  ~IfStatement() {
+    delete condition;
+    delete body;
+    delete else_body;
+  }
 };
 
 class AssignmentExpr : public Expr {
@@ -108,6 +118,10 @@ class AssignmentExpr : public Expr {
   const Expr* assigne;
   const Expr* value;
   AssignmentExpr(Expr* assigne, Expr* value) : assigne(assigne), value(value) {}
+  ~AssignmentExpr() {
+    delete assigne;
+    delete value;
+  }
 };
 
 class Identifier : public Expr {

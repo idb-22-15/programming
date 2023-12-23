@@ -1,6 +1,18 @@
 static const unsigned int a = 10;
+
+int a;
+int a = 4;
+
+float a;
 float a = 999.99;
+
+double a;
 double a = 333;
+
+char a;
 char a = 'a';
+
+bool a;
 bool a = true;
 bool a = false;
+

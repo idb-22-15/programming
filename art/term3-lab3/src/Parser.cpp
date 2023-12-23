@@ -108,7 +108,9 @@ class Parser {
       default:
         Expr* value = this->parse_expr();
         this->expect(TokenType::semicolon);
-        return *value;
+        Expr v = *value;
+        delete value;
+        return v;
     };
   }
 
@@ -380,6 +382,8 @@ class Parser {
     return VarDeclaration(var_type, identtok.literal,
                           std::experimental::nullopt);
   }
+
+  // !  Class declaration
 
   ClassDeclaration parse_class_declaration() {
     Token classtok = this->expect(TokenType::classtok, TokenType::structtok,

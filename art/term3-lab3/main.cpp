@@ -2,6 +2,7 @@
 
 void run_tests() {
   ParserIO::parse_file("./__tests__/empty.txt");
+  ParserIO::parse_file("./__tests__/empty-kinda.txt");
 
   ParserIO::parse_file("./__tests__/if-statement.txt");
 
