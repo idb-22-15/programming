@@ -9,7 +9,7 @@
 enum class NodeType {
   // statements
   statement,
-  program,
+  program, 
   block_statement,
   return_statement,
   if_statement,
@@ -25,7 +25,7 @@ enum class NodeType {
   assignment_expr,
 
   // literals
-  identifier,
+  identifier, 
   numeric_literal,
   char_literal,
   bool_literal,

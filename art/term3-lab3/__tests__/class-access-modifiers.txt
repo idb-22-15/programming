@@ -11,4 +11,5 @@ class Foo {
   
   protected:
   void f3() {}
+  private:
 };

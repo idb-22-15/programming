@@ -360,7 +360,7 @@ class Parser {
       VarDeclaration item = this->parse_args_list_item();
       if (!item.value && args.back().value)
         throw UnexpectedToken(this->at(),
-                              "Args with default values must be in front");
+                              "Args with default values must be at the end");
       args.push_back(item);
       if (this->eof_or_illegal())
         throw UnexpectedToken(this->at(), "Parse args list");

@@ -20,7 +20,7 @@ class Cat : public Animal, public IMeowable {
   const bool can_fly = false;
 
  public:
-  Cat(int count_legs = 4) : legs(count_legs) {}
+  Cat(int count_legs = 4) : legs(count_les) {}
 
   void meow() { int meow_type = 5 / 2 * 7; }
 
