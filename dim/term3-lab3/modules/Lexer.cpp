@@ -70,6 +70,7 @@ class Lexer {
       this->row++;
       this->col = 0;
     }
+    this->col++;
     return this->cur++;
   }
 
@@ -87,51 +88,43 @@ class Lexer {
   Token getNextToken() {
     this->skipSpaces();
     char ch = this->get();
+    Position posChar(this->cur, this->cur + 1, this->row, this->col);
     switch (ch) {
       case '(': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenParen, ch, pos);
+        return Token(TokenType::OpenParen, ch, posChar);
       }
       case ')': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseParen, ch, pos);
+        return Token(TokenType::CloseParen, ch, posChar);
       }
       case '{': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenSquirly, ch, pos);
+        return Token(TokenType::OpenSquirly, ch, posChar);
       }
       case '}': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseSquirly, ch, pos);
+        return Token(TokenType::CloseSquirly, ch, posChar);
       }
       case '[': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenBracket, ch, pos);
+        return Token(TokenType::OpenBracket, ch, posChar);
       }
       case ']': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseBracket, ch, pos);
+        return Token(TokenType::CloseBracket, ch, posChar);
       }
       case ';': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Semicolon, ch, pos);
+        return Token(TokenType::Semicolon, ch, posChar);
       }
       case ',': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Comma, ch, pos);
+        return Token(TokenType::Comma, ch, posChar);
       }
       case '=': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Assign, ch, pos);
+        return Token(TokenType::Assign, ch, posChar);
       }
       case '/': {
         if (this->getNext() == '/') {
@@ -171,9 +164,8 @@ class Lexer {
           return Token(TokenType::LongComment, comment, pos);
         }
 
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
-        this->move();
-        return Token(TokenType::Illegal, ch, pos);
+        this->eraseChar();
+        return Token(TokenType::Illegal, ch, posChar);
       }
       case '\0': {
         Position pos(this->cur, this->cur, this->row, this->col);
@@ -213,8 +205,8 @@ class Lexer {
       return Token(TokenType::Ident, ident, pos);
     }
 
-    Position pos(this->cur, this->cur + 1, this->row, this->col);
-    return Token(TokenType::Illegal, ch, pos);
+    this->eraseChar();
+    return Token(TokenType::Illegal, ch, posChar);
   }
 
   bool isIdentChar() {

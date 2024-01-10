@@ -85,7 +85,9 @@ class Parser {
         this->parseArrayDimentions();  // [] or [10] or [5][2] or [?][?]..[?]
 
     if (this->get().type == TokenType::Semicolon) {
-      this->require(TokenType::Semicolon, locationMessage);  // ;
+      Token token = this->require(TokenType::Semicolon, locationMessage);  // ;
+      if (!this->allDimentionsDefined(dimentions))
+        throw ParserException(token, "Размерность не определена");
       return;
     }
 
@@ -111,25 +113,12 @@ class Parser {
     this->require(TokenType::OpenBracket, locationMessage);  // [
 
     if (this->get().type != TokenType::CloseBracket) {  // <empty>
-      Token intLiteral =
+      Token intToken =
           this->require(TokenType::IntLiteral, locationMessage);  // 1
-      size = make_optional<size_t>(stoi(intLiteral.lit));
+      size = make_optional<size_t>(stoi(intToken.lit));
     }
     this->require(TokenType::CloseBracket, locationMessage);  // ]
 
-    return size;
-  }
-
-  optional<size_t> getArraySize(vector<optional<size_t>> dimentions) {
-    optional<size_t> size = 1;
-
-    for (optional<size_t> dimention : dimentions) {
-      if (dimention == nullopt) {
-        size = nullopt;
-        break;
-      }
-      size.value() *= dimention.value();
-    }
     return size;
   }
 
@@ -139,33 +128,24 @@ class Parser {
     size_t countItems = 0;
     size_t countDimentions = dimentions.size();
     optional<size_t> dimentionSize = dimentions[level - 1];
+    optional<size_t> restSize = this->restDimentionsSize(dimentions, level);
 
     if (level == countDimentions) {
       this->require(TokenType::OpenSquirly, locationMessage);  // {
 
       if (this->get().type != TokenType::CloseSquirly) {  // not }
-        this->parseArrayItem(countDimentions, level);
-        countItems++;
+        countItems += this->parseArrayItem(countDimentions, level);
       }
 
       while (this->get().type == TokenType::Comma) {
         this->require(TokenType::Comma, locationMessage);  // ,
         if (this->get().type !=
             TokenType::CloseSquirly) {  // проверка на висячую запятую
-          this->parseArrayItem(countDimentions, level);
-          countItems++;
+          countItems += this->parseArrayItem(countDimentions, level);
         }
       }
 
       this->require(TokenType::CloseSquirly, locationMessage);  // }
-      if (level != 1 && dimentionSize != nullopt &&
-          countItems > dimentionSize.value())
-        throw ParserException(this->eraseToken(),
-                              "В подмассиве на уровне " + to_string(level) +
-                                  " инициализированно слишком много элементов; "
-                                  "Размерность: " +
-                                  to_string(dimentionSize.value()) +
-                                  ", элементов: " + to_string(countItems));
     } else {
       this->require(TokenType::OpenSquirly, locationMessage);  // {
 
@@ -186,41 +166,22 @@ class Parser {
       this->require(TokenType::CloseSquirly, locationMessage);  // }
     }
 
+    if (restSize && countItems > restSize.value())
+      throw ParserException(this->eraseToken(),
+                            "В массиве на уровне " + to_string(level) +
+                                " инициализированно слишком много элементов; "
+                                "Размерность: " +
+                                to_string(restSize.value()) +
+                                ", элементов: " + to_string(countItems));
+
     return countItems;
   }
 
   void parseArrayBody(vector<optional<size_t>> dimentions) {
-    optional<size_t> size = this->getArraySize(dimentions);
-
-    // size_t countItems = 0;
-
-    // this->require(TokenType::OpenSquirly);  // {
-
-    // if (this->get().type != TokenType::CloseSquirly) {
-    //   this->parseArrayItem();
-    //   countItems++;
-    // }
-
-    // while (this->get().type == TokenType::Comma) {
-    //   this->require(TokenType::Comma);  // ,
-    //   if (this->get().type !=
-    //       TokenType::CloseSquirly) {  // проверка на висячую запятую
-    //     this->parseArrayItem();
-    //     countItems++;
-    //   }
-    // }
-
-    // this->require(TokenType::CloseSquirly);  // }
-
+    optional<size_t> size = this->restDimentionsSize(dimentions);
     size_t countItems = this->parseArrayInnerBody(dimentions);
 
-    if (size != nullopt && size.value() < countItems)
-      throw ParserException(
-          this->eraseToken(),
-          "В массиве инициализированно слишком много элементов; Размерность: " +
-              to_string(size.value()) +
-              ", элементов: " + to_string(countItems));
-    if (size == nullopt && dimentions.size() >= 2)
+    if (!size && dimentions.size() >= 2)
       throw ParserException(this->eraseToken(),
                             "Матрица имеет незавешённую размерность");
   }
@@ -260,5 +221,21 @@ class Parser {
       }
     }
     return defined;
+  }
+
+  optional<size_t> restDimentionsSize(vector<optional<size_t>> dimentions,
+                                      size_t currentLevel = 1) {
+    optional<size_t> currentDimention = dimentions[currentLevel - 1];
+    optional<size_t> restSize = currentDimention;
+
+    for (size_t i = currentLevel; i < dimentions.size(); i++) {
+      size_t level = i + 1;
+
+      if (dimentions[level - 1])
+        restSize = restSize.value() * dimentions[level - 1].value();
+      else
+        restSize = nullopt;
+    }
+    return restSize;
   }
 };

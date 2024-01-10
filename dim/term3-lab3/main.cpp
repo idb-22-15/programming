@@ -27,7 +27,7 @@ void testParser() {
 int main(int argc, char** argv) {
   if (argc == 1)
     testParser();
-  // int arr[2][2][2][2][2] = {{{{1, 2, 3, 4, 5, 6}, 3}, 4}};
+
   if (argc == 2) {
     Parser parser;
     parser.parseFile(argv[1]);
