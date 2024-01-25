@@ -26,7 +26,7 @@ class Parser {
   void parse_file(std::string filename) {
     try {
       std::cout << "parsing file: " << filename << std::endl;
-      std::string file_content = FileReader::try_read_file_to_string(filename);
+      std::string file_content = FileReader::tryReadFileToString(filename);
       this->parse_string(file_content);
     } catch (const std::exception& e) {
       std::cout << "parsing: error" << std::endl;
@@ -80,39 +80,36 @@ class Parser {
   bool eof() { return this->tok().type == TokenType::eof; }
 
   Token require(TokenType type) {
-    Token tok = this->eat();
-    if (tok.type != type) {
+    if (this->tok().type != type) {
       std::string message = "Expected: " + Token::print_type(type);
-      throw ExceptionWrongToken(tok, message);
+      throw ExceptionWrongToken(this->tok(), message);
     }
-    return tok;
+    return this->eat();
   }
 
   Token require_any(TokenType type1, TokenType type2) {
-    Token tok = this->eat();
-    if (tok.type != type1 && tok.type != type2) {
+    if (this->tok().type != type1 && this->tok().type != type2) {
       std::string message = "Expected: " + Token::print_type(type1) + " or " +
                             Token::print_type(type2);
-      throw ExceptionWrongToken(tok, message);
+      throw ExceptionWrongToken(this->tok(), message);
     }
-    return tok;
+    return this->eat();
   }
 
   Token require_any(TokenType type1, TokenType type2, TokenType type3) {
-    Token tok = this->eat();
-    if (tok.type != type1 && tok.type != type2 &&
-        tok.type != type3) {
+    if (this->tok().type != type1 && this->tok().type != type2 &&
+        this->tok().type != type3) {
       std::string message = "Expected: " + Token::print_type(type1) + " or " +
                             Token::print_type(type2) + " or " +
                             Token::print_type(type3);
-      throw ExceptionWrongToken(tok, message);
+      throw ExceptionWrongToken(this->tok(), message);
     }
-    return tok;
+    return this->eat();
   }
 
   std::string parse_class() {
     this->require_any(TokenType::classt, TokenType::structt,
-                      TokenType::uniont);                      // class/struct/union
+                      TokenType::uniont);                      // class
     Token ident_token = this->require(TokenType::identifier);  // Classname
     this->require(TokenType::lsquirly);                        // {
 
@@ -223,7 +220,7 @@ class Parser {
       if (this->eof())
         this->require(TokenType::rsquirly);  // throw error
     }
-    std::cout <<  "Dima will handle this" << std::endl;
+    throw ExceptionWrongToken(this->tok(), "Dima will handle this");
   }
 
   void parse_outer_method(std::set<std::string> defined_classes) {

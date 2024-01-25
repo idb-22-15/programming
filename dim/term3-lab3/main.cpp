@@ -1,17 +1,16 @@
 #include "modules/Parser.cpp"
-#include "Windows.h"
 
 using std::vector;
 
-// void testLexicalAnalisis() {
-//   Lexer lexer;
+void testLexicalAnalisis() {
+  Lexer lexer;
 
-//   vector<Token> tokenList = lexer.lexicalAnalisis(
-//       "int // this is int\n arr[5][1] = {{3}, {2}, {13}, 4}; /*long*/");
-//   for (Token token : tokenList) {
-//     token.printToken();
-//   }
-// }
+  vector<Token> tokenList = lexer.lexicalAnalisis(
+      "int // this is int\n arr[5][1] = {{3}, {2}, {13}, 4}; /*long*/");
+  for (Token token : tokenList) {
+    token.printToken();
+  }
+}
 
 void testParser() {
   Parser parser;
@@ -26,9 +25,6 @@ void testParser() {
 }
 
 int main(int argc, char** argv) {
-  SetConsoleCP(CP_UTF8);
-  SetConsoleOutputCP(CP_UTF8 );
-
   if (argc == 1)
     testParser();
 

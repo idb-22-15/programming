@@ -4,7 +4,7 @@
 
 class FileReader {
  public:
-  static std::string try_read_file_to_string(std::string filename) {
+  static std::string tryReadFileToString(std::string filename) {
     std::ifstream file(filename);
     if (!file)
       throw std::runtime_error("Cannot open file");

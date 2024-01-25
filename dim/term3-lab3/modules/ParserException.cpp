@@ -12,8 +12,8 @@ class ParserException : public std::exception {
  public:
   ParserException(Token token, string message) : token(token) {
     this->message = "Получен токен: `" + token.lit +
-                    "` на позиции: строка: " + to_string(token.pos.row) + ", столбец: " + to_string(token.pos.col) + "; " +
-                    message;
+                    "` на позиции: строка: " + to_string(token.pos.row) +
+                    ", столбец: " + to_string(token.pos.col) + "; " + message;
   }
 
   const char* what() const throw() { return this->message.c_str(); }

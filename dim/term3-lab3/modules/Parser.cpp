@@ -86,7 +86,8 @@ class Parser {
 
     if (this->get().type == TokenType::Semicolon) {
       Token token = this->require(TokenType::Semicolon, locationMessage);  // ;
-      if (!this->allDimentionsDefined(dimentions)) throw ParserException(token, "Размерность не определена");
+      if (!this->allDimentionsDefined(dimentions))
+        throw ParserException(token, "Размерность не определена");
       return;
     }
 
@@ -138,8 +139,9 @@ class Parser {
 
       while (this->get().type == TokenType::Comma) {
         this->require(TokenType::Comma, locationMessage);  // ,
-        if (this->get().type != TokenType::CloseSquirly) {  // проверка на висячую запятую
-            countItems += this->parseArrayItem(countDimentions, level);
+        if (this->get().type !=
+            TokenType::CloseSquirly) {  // проверка на висячую запятую
+          countItems += this->parseArrayItem(countDimentions, level);
         }
       }
 
@@ -164,13 +166,13 @@ class Parser {
       this->require(TokenType::CloseSquirly, locationMessage);  // }
     }
 
-    if (restSize && countItems > restSize.value())  
+    if (restSize && countItems > restSize.value())
       throw ParserException(this->eraseToken(),
-        "В массиве на уровне " + to_string(level) +
-            " инициализированно слишком много элементов; "
-            "Размерность: " +
-            to_string(restSize.value()) +
-            ", элементов: " + to_string(countItems));
+                            "В массиве на уровне " + to_string(level) +
+                                " инициализированно слишком много элементов; "
+                                "Размерность: " +
+                                to_string(restSize.value()) +
+                                ", элементов: " + to_string(countItems));
 
     return countItems;
   }
@@ -201,7 +203,7 @@ class Parser {
 
   void parseAssign() {
     string locationMessage = "Присваивание значения элементу массива";
-    this->require(TokenType::Ident);  // array 
+    this->require(TokenType::Ident);  // array
     vector<optional<size_t>> dimentions = this->parseArrayDimentions();  // [2]
     this->require(TokenType::Assign);                                    // =
     this->require(TokenType::IntLiteral);                                // 100
@@ -221,15 +223,18 @@ class Parser {
     return defined;
   }
 
-  optional<size_t> restDimentionsSize(vector<optional<size_t>> dimentions, size_t currentLevel = 1) {
+  optional<size_t> restDimentionsSize(vector<optional<size_t>> dimentions,
+                                      size_t currentLevel = 1) {
     optional<size_t> currentDimention = dimentions[currentLevel - 1];
     optional<size_t> restSize = currentDimention;
 
-    for(size_t i = currentLevel; i < dimentions.size(); i++) {
+    for (size_t i = currentLevel; i < dimentions.size(); i++) {
       size_t level = i + 1;
 
-      if (dimentions[level - 1]) restSize = restSize.value() * dimentions[level - 1].value();
-      else restSize = nullopt;
+      if (dimentions[level - 1])
+        restSize = restSize.value() * dimentions[level - 1].value();
+      else
+        restSize = nullopt;
     }
     return restSize;
   }

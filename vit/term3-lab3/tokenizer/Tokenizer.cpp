@@ -71,25 +71,37 @@ class Tokenizer {
     char ch = this->ch();
     switch (ch) {
       case '(': {
-        return this->make_token(TokenType::lparen);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::lparen, ch, pos);
       }
       case ')': {
-        return this->make_token(TokenType::rparen);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::rparen, ch, pos);
       }
       case '{': {
-        return this->make_token(TokenType::lsquirly);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::lsquirly, ch, pos);
       }
       case '}': {
-        return this->make_token(TokenType::rsquirly);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::rsquirly, ch, pos);
       }
       case ',': {
-        return this->make_token(TokenType::comma);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::comma, ch, pos);
       }
       case ';': {
-        return this->make_token(TokenType::semicolon);
+        TokenPosition pos(this->pos, this->pos + 1);
+        this->eat();
+        return Token(TokenType::semicolon, ch, pos);
       }
       case ':': {
-        if (this->look_ahead() == ':') {
+        if (this->ch_after() == ':') {
           size_t start = this->pos;
           this->eat();
           this->eat();
@@ -130,9 +142,9 @@ class Tokenizer {
         }
       }
       case '\0': {
-        TokenPosition pos(this->pos, this->pos + 1);
+        TokenPosition pos(this->pos, this->pos);
         this->eat();
-        return Token(TokenType::eof, "<eof>", pos);
+        return Token(TokenType::eof, "", pos);
       }
       default:
         break;
