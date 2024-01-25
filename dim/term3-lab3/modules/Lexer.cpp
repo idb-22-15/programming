@@ -1,59 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Token.cpp"
 
 using std::string;
 using std::vector;
-
-enum class TokenType {
-  OpenParen,     // (
-  CloseParen,    // )
-  OpenSquirly,   // {
-  CloseSquirly,  // }
-  OpenBracket,   // [
-  CloseBracket,  // ]
-  Semicolon,     // ;
-  Comma,         // ,
-  Assign,        // =
-  Int,           // int
-  Ident,         // variable
-  IntLiteral,    // 10,
-
-  LineComment,
-  LongComment,
-
-  Eof,
-  Illegal,
-};
-
-class Position {
- public:
-  size_t start;
-  size_t end;
-  size_t row;
-  size_t col;
-
-  Position(size_t start, size_t end, size_t row, size_t col)
-      : start(start), end(end), row(row), col(col) {}
-};
-
-class Token {
- public:
-  TokenType type;
-  string lit;  // string literal
-  Position pos;
-
-  Token(TokenType type, string lit, Position pos)
-      : type(type), lit(lit), pos(pos) {}
-  Token(TokenType type, char charLit, Position pos) : type(type), pos(pos) {
-    this->lit = charLit;
-  }
-
-  void print() {
-    std::cout << "start: " << this->pos.start << " end: " << this->pos.end
-              << " literal: " << this->lit << std::endl;
-  }
-};
 
 class Lexer {
  private:
@@ -63,26 +16,37 @@ class Lexer {
   size_t col = 1;
 
  public:
-  vector<Token> getTokens(const string& text) {
+  vector<Token> lexicalAnalisis(const string& text) {
     this->text = text;
     this->cur = 0;
     this->row = 1;
     this->col = 1;
 
-    vector<Token> tokens;
+    vector<Token> tokenList;
     Token tok = this->getNextToken();
-    tok.print();
-    tokens.push_back(tok);
+    tokenList.push_back(tok);
     while (tok.type != TokenType::Eof) {
       tok = this->getNextToken();
-      tok.print();
-      tokens.push_back(tok);
+      tokenList.push_back(tok);
     }
 
-    return tokens;
+    vector<Token> tokenListFiltered = this->getfilteredTokenList(tokenList);
+    return tokenListFiltered;
   };
 
  private:
+  vector<Token> getfilteredTokenList(const vector<Token> tokenList) {
+    vector<Token> tokenListFiltered;
+
+    for (Token token : tokenList) {
+      if (!(token.type == TokenType::LineComment ||
+            token.type == TokenType::LongComment)) {
+        tokenListFiltered.push_back(token);
+      }
+    }
+    return tokenListFiltered;
+  }
+
   bool isEnd() { return this->cur >= this->text.length(); }
   char get() { return this->text[this->cur]; };
   char getNext() {
@@ -106,6 +70,7 @@ class Lexer {
       this->row++;
       this->col = 0;
     }
+    this->col++;
     return this->cur++;
   }
 
@@ -123,51 +88,43 @@ class Lexer {
   Token getNextToken() {
     this->skipSpaces();
     char ch = this->get();
+    Position posChar(this->cur, this->cur + 1, this->row, this->col);
     switch (ch) {
       case '(': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenParen, ch, pos);
+        return Token(TokenType::OpenParen, ch, posChar);
       }
       case ')': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseParen, ch, pos);
+        return Token(TokenType::CloseParen, ch, posChar);
       }
       case '{': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenSquirly, ch, pos);
+        return Token(TokenType::OpenSquirly, ch, posChar);
       }
       case '}': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseSquirly, ch, pos);
+        return Token(TokenType::CloseSquirly, ch, posChar);
       }
       case '[': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::OpenParen, ch, pos);
+        return Token(TokenType::OpenBracket, ch, posChar);
       }
       case ']': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::CloseBracket, ch, pos);
+        return Token(TokenType::CloseBracket, ch, posChar);
       }
       case ';': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Semicolon, ch, pos);
+        return Token(TokenType::Semicolon, ch, posChar);
       }
       case ',': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Comma, ch, pos);
+        return Token(TokenType::Comma, ch, posChar);
       }
       case '=': {
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
         this->eraseChar();
-        return Token(TokenType::Assign, ch, pos);
+        return Token(TokenType::Assign, ch, posChar);
       }
       case '/': {
         if (this->getNext() == '/') {
@@ -207,9 +164,8 @@ class Lexer {
           return Token(TokenType::LongComment, comment, pos);
         }
 
-        Position pos(this->cur, this->cur + 1, this->row, this->col);
-        this->move();
-        return Token(TokenType::Illegal, ch, pos);
+        this->eraseChar();
+        return Token(TokenType::Illegal, ch, posChar);
       }
       case '\0': {
         Position pos(this->cur, this->cur, this->row, this->col);
@@ -249,18 +205,11 @@ class Lexer {
       return Token(TokenType::Ident, ident, pos);
     }
 
-    Position pos(this->cur, this->cur + 1, this->row, this->col);
-    return Token(TokenType::Illegal, ch, pos);
+    this->eraseChar();
+    return Token(TokenType::Illegal, ch, posChar);
   }
 
   bool isIdentChar() {
     return isalpha(this->get()) || isdigit(this->get()) || this->get() == '_';
   }
 };
-
-int main() {
-  Lexer lexer;
-
-  lexer.getTokens(
-      "int // this is int\n arr[5][1] = {{3}, {2}, {13}, 4}; /*long*/");
-}
